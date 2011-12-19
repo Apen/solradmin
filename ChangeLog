@@ -1,5 +1,6 @@
 2011-12-19 CERDAN Yohann  <cerdanyohann@yahoo.fr>
 	* Fix a bug with multivalued fields
 	* Save the field to display in page browser
+	* Multi core support
 2011-12-16 CERDAN Yohann  <cerdanyohann@yahoo.fr>
 	* First version

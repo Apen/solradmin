@@ -38,6 +38,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 {
 	protected $pageinfo;
 	protected $nbElementsPerPage = 15;
+	protected $beUserSessionDatas = NULL;
 
 	/**
 	 * Initializes the Module
@@ -85,7 +86,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 			// Draw the header.
 			$this->doc = t3lib_div::makeInstance('bigDoc');
 			$this->doc->divClass = '';
-			$this->doc->bodyTagAdditions = ' style="height:95%;"';
+			$this->doc->bodyTagAdditions = ' style="height:95%;margin: 0px 10px;"';
 			$this->doc->backPath = $BACK_PATH;
 			$this->doc->form = '<form action="" method="post" enctype="multipart/form-data">';
 
@@ -116,17 +117,36 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 			$this->content .= $this->doc->header($LANG->getLL('title'));
 			$this->content .= $this->doc->spacer(5);
 
-			// TODO make a menu to select the connection
-			/*
+
+			// multi core connections
+			$beUserSession = $GLOBALS['BE_USER']->fetchUserSession();
+			$this->beUserSessionDatas = unserialize($beUserSession['ses_data']);
+			$gpSolrConnections = t3lib_div::_GP('solrconnections');
+			if ($gpSolrConnections !== NULL) {
+				$GLOBALS['BE_USER']->setAndSaveSessionData('indexsolrconnection', $gpSolrConnections);
+			} else {
+				if (empty($this->beUserSessionDatas['indexsolrconnection'])) {
+					$GLOBALS['BE_USER']->setAndSaveSessionData('indexsolrconnection', 0);
+					$this->beUserSessionDatas['indexsolrconnection'] = 0;
+				} else {
+					$gpSolrConnections = $this->beUserSessionDatas['indexsolrconnection'];
+				}
+			}
 			$solrConnections = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
-			$selectSolr = '<select name="solrconnections">';
+			$selectSolr = '<select name="solrconnections" onchange="jumpToUrl(\'mod.php?&amp;id=0&amp;M=tools_txsolradminM1&amp;solrconnections=\'+this.options[this.selectedIndex].value,this);">';
+			$index = 0;
 			foreach ($solrConnections as $solrConnection) {
-				$selectSolr .= '<option value="">' . $solrConnection->getScheme() . '://' . $solrConnection->getHost() . ':' . $solrConnection->getPort() . $solrConnection->getPath() . '</option>';
+				if ($gpSolrConnections == $index) {
+					$selected = ' selected="selected"';
+				} else {
+					$selected = '';
+				}
+				$selectSolr .= '<option value="' . $index . '"' . $selected . '>' . $solrConnection->getScheme() . '://' . $solrConnection->getHost() . ':' . $solrConnection->getPort() . $solrConnection->getPath() . ' [' . $index . ']</option>';
+				$index++;
 			}
 			$selectSolr .= '</select>';
-			*/
 
-			$this->content .= $this->doc->section('', $this->doc->funcMenu($headerSection, t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function'])));
+			$this->content .= $this->doc->section('', $this->doc->funcMenu($headerSection, t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']) . $selectSolr));
 			$this->content .= $this->doc->divider(5);
 			$this->moduleContent();
 		} else {
@@ -163,11 +183,11 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 
 		// get the first connection
 		// TODO get the selected connection
-		$this->solrConnection = $solrConnections[0];
-		$this->currentConnection['scheme'] = $solrConnections[0]->getScheme();
-		$this->currentConnection['host'] = $solrConnections[0]->getHost();
-		$this->currentConnection['port'] = $solrConnections[0]->getPort();
-		$this->currentConnection['path'] = $solrConnections[0]->getPath();
+		$this->solrConnection = $solrConnections[$this->beUserSessionDatas['indexsolrconnection']];
+		$this->currentConnection['scheme'] = $this->solrConnection->getScheme();
+		$this->currentConnection['host'] = $this->solrConnection->getHost();
+		$this->currentConnection['port'] = $this->solrConnection->getPort();
+		$this->currentConnection['path'] = $this->solrConnection->getPath();
 
 		switch ((string)$this->MOD_SETTINGS['function']) {
 			case 1:
@@ -183,7 +203,10 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 	}
 
 	public function displaySolrModule() {
-		$this->content .= '<input type="button" value ="' . $GLOBALS['LANG']->getLL('iframeback') . '" onclick="history.go(-1)"/><br/><br/><iframe src="' . $this->currentConnection['scheme'] . '://' . $this->currentConnection['host'] . ':' . $this->currentConnection['port'] . $this->currentConnection['path'] . 'admin/" style="width:100%;height:600px;border:0px;"></iframe>';
+		$this->content .= '<input type="button" value ="' . $GLOBALS['LANG']->getLL('iframeback') . '" onclick="history.go(-1)"/>';
+		$this->content .= '<br/><br/><iframe src="';
+		$this->content .= $this->currentConnection['scheme'] . '://' . $this->currentConnection['host'] . ':' . $this->currentConnection['port'] . $this->currentConnection['path'] . 'admin/" ';
+		$this->content .= 'style="width:100%;height:100%;border:0px;"></iframe>';
 	}
 
 	public function displaySearchRecords() {
@@ -301,7 +324,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		if (!empty($query)) {
 			$listURL .= '&query=' . $query;
 		}
-		if (!empty($query)) {
+		if (!empty($solrfields)) {
 			$i = 0;
 			foreach ($solrfields as $solrfield) {
 				$listURL .= '&solrfields[' . $i++ . ']=' . $solrfield;

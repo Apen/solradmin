@@ -12,10 +12,10 @@
 
 $EM_CONF[$_EXTKEY] = array (
 	'title' => 'Solr Administration',
-	'description' => 'You can directly access your solr module, search records with an interface, delete some specifics records and do other operations',
+	'description' => 'With this module you can directly access your solr module, search records with an interface, delete some specifics records and do other operations (with multi core support)',
 	'category' => 'module',
 	'shy' => 0,
-	'version' => '1.0.1',
+	'version' => '1.0.2',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
