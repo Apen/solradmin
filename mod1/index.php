@@ -223,7 +223,11 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		foreach ($response->response->docs as $doc) {
 			$content .= '<tr class="db_list_normal">';
 			foreach ($fields as $field) {
-				$content .= '<td class="cell">' . $doc->$field . '</td>';
+				if (is_array($doc->$field)) {
+					$content .= '<td class="cell">' . implode('<br/>', $doc->$field) . '</td>';
+				} else {
+					$content .= '<td class="cell">' . $doc->$field . '</td>';
+				}
 			}
 			$content .= '<td class="cell"><a onclick="deleteRecord(\'' . $actionURL . '&delete=' . $doc->id . '\');"><img src="' . t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'sysext/t3skin/icons/gfx/garbage.gif"/></a></td>';
 			$content .= '</tr>';
@@ -232,7 +236,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		$this->content .= $content . '<br/>';
 		$this->content .= $this->renderListNavigation($numTotal, $this->nbElementsPerPage, $pointer) . '<br/>';
 		$this->content .= $this->getSelectFields($fields) . '&nbsp;&nbsp;';
-		$this->content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('filter') . '" />';
+		$this->content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('filter') . '" /><br/><br/><br/>';
 	}
 
 	public function getSelectFields($selectedList) {
@@ -290,11 +294,18 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		// Show page selector if not all records fit into one page
 		$first = $previous = $next = $last = $reload = '';
 		$query = t3lib_div::_GP('query');
+		$solrfields = t3lib_div::_GP('solrfields');
 		$listURLOrig = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		$listURL = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		$listURL .= '&nbPerPage=' . $this->nbElementsPerPage;
 		if (!empty($query)) {
 			$listURL .= '&query=' . $query;
+		}
+		if (!empty($query)) {
+			$i = 0;
+			foreach ($solrfields as $solrfield) {
+				$listURL .= '&solrfields[' . $i++ . ']=' . $solrfield;
+			}
 		}
 		$currentPage = floor(($firstElementNumber + 1) / $iLimit) + 1;
 		// First
