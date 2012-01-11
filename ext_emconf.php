@@ -3,7 +3,7 @@
 /***************************************************************
  * Extension Manager/Repository config file for ext "solradmin".
  *
- * Auto generated 06-12-2015 16:32
+ * Auto generated 06-12-2015 16:33
  *
  * Manual updates:
  * Only the data in the array - everything else is removed by next
@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'description' => 'With this module you can directly access your solr module, search records with an interface, delete some specifics records and do other operations (with multi core support)',
 	'category' => 'module',
 	'shy' => 0,
-	'version' => '1.0.5',
+	'version' => '1.0.6',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
