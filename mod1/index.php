@@ -228,7 +228,8 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 			$query = '*:*';
 		}
 		$actionURL .= '&query=' . $query;
-		$search = $this->solrConnection->search($query, $offset, $limit);
+		$params = array('qt' => 'standard');
+		$search = $this->solrConnection->search($query, $offset, $limit, $params);
 		$response = json_decode($search->getRawResponse());
 		$content = '';
 		$content .= $GLOBALS['LANG']->getLL('query') . ' : <input type="text" name="query" value="' . $query . '" size="100"/> <input type="submit" value="' . $GLOBALS['LANG']->getLL('search') . '" /><br/>';

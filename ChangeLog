@@ -1,3 +1,5 @@
+2012-01-11 CERDAN Yohann  <cerdanyohann@yahoo.fr>
+	* Force query type to standard in the BE module
 2011-12-19 CERDAN Yohann  <cerdanyohann@yahoo.fr>
 	* Fix a bug with multivalued fields
 	* Save the field to display in page browser
