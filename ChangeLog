@@ -1,3 +1,9 @@
+2012-01-19 CERDAN Yohann  <cerdanyohann@yahoo.fr>
+	* add a new module in web_info
+	* add a single view for each item
+	* add link to debug JSON & XML urls
+2012-01-12 CERDAN Yohann  <cerdanyohann@yahoo.fr>
+	* protect special characters in query
 2012-01-11 CERDAN Yohann  <cerdanyohann@yahoo.fr>
 	* Force query type to standard in the BE module
 	* Fix deprecated fixed_lgd_pre()

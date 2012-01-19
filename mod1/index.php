@@ -24,6 +24,7 @@
 
 $LANG->includeLLFile('EXT:solradmin/mod1/locallang.xml');
 require_once(PATH_t3lib . 'class.t3lib_scbase.php');
+require_once(PATH_site . 'typo3conf/ext/solradmin/classes/class.tx_solradmin_connection.php');
 $BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the users has no permission for entry.
 
 
@@ -34,6 +35,7 @@ $BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the user
  * @package    TYPO3
  * @subpackage    tx_solradmin
  */
+
 class  tx_solradmin_module1 extends t3lib_SCbase
 {
 	protected $pageinfo;
@@ -92,31 +94,31 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 
 			// JavaScript
 			$this->doc->JScode = '
-							<script language="javascript" type="text/javascript">
-								script_ended = 0;
-								function jumpToUrl(URL)	{
-									document.location = URL;
-								}
-								function deleteRecord(url)	{	//
-									if (confirm(' . $LANG->JScharCode($LANG->getLL('areyousure')) . '))	{
-										jumpToUrl(url);
-									}
-									return false;
-								}
-							</script>
-						';
+				<script language="javascript" type="text/javascript">
+					script_ended = 0;
+					function jumpToUrl(URL)	{
+						document.location = URL;
+					}
+					function deleteRecord(url)	{	//
+						if (confirm(' . $LANG->JScharCode($LANG->getLL('areyousure')) . '))	{
+							jumpToUrl(url);
+						}
+						return false;
+					}
+				</script>
+			';
+
 			$this->doc->postCode = '
-							<script language="javascript" type="text/javascript">
-								script_ended = 1;
-								if (top.fsMod) top.fsMod.recentIds["web"] = 0;
-							</script>
-						';
+				<script language="javascript" type="text/javascript">
+					script_ended = 1;
+					if (top.fsMod) top.fsMod.recentIds["web"] = 0;
+				</script>
+			';
 
 			$headerSection = $this->doc->getHeader('pages', $this->pageinfo, $this->pageinfo['_thePath']) . '<br />' . $LANG->sL('LLL:EXT:lang/locallang_core.xml:labels.path') . ': ' . t3lib_div::fixed_lgd_cs($this->pageinfo['_thePath'], 50);
 			$this->content .= $this->doc->startPage($LANG->getLL('title'));
 			$this->content .= $this->doc->header($LANG->getLL('title'));
 			$this->content .= $this->doc->spacer(5);
-
 
 			// multi core connections
 			$beUserSession = $GLOBALS['BE_USER']->fetchUserSession();
@@ -167,7 +169,6 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 	 */
 
 	public function printContent() {
-
 		$this->content .= $this->doc->endPage();
 		echo $this->content;
 	}
@@ -181,13 +182,8 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 	public function moduleContent() {
 		$solrConnections = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
 
-		// get the first connection
-		// TODO get the selected connection
-		$this->solrConnection = $solrConnections[$this->beUserSessionDatas['indexsolrconnection']];
-		$this->currentConnection['scheme'] = $this->solrConnection->getScheme();
-		$this->currentConnection['host'] = $this->solrConnection->getHost();
-		$this->currentConnection['port'] = $this->solrConnection->getPort();
-		$this->currentConnection['path'] = $this->solrConnection->getPath();
+		// get the selected connection
+		$this->solrAdminConnection = new tx_solradmin_connection($solrConnections[$this->beUserSessionDatas['indexsolrconnection']]);
 
 		switch ((string)$this->MOD_SETTINGS['function']) {
 			case 1:
@@ -204,68 +200,76 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 
 	public function displaySolrModule() {
 		$this->content .= '<input type="button" value ="' . $GLOBALS['LANG']->getLL('iframeback') . '" onclick="history.go(-1)"/>';
-		$this->content .= '<br/><br/><iframe src="';
-		$this->content .= $this->currentConnection['scheme'] . '://' . $this->currentConnection['host'] . ':' . $this->currentConnection['port'] . $this->currentConnection['path'] . 'admin/" ';
-		$this->content .= 'style="width:100%;height:100%;border:0px;"></iframe>';
+		$this->content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->getSolrAdminUrl() . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('opentab') . '</strong></a>';
+		$this->content .= '<br/><br/><iframe src="' . $this->solrAdminConnection->getSolrAdminUrl() . '" style="width:100%;height:600px;border:0px;"></iframe>';
 	}
 
 	public function displaySearchRecords() {
 		global $BE_USER, $LANG, $BACK_PATH, $TCA_DESCR, $TCA, $CLIENT, $TYPO3_CONF_VARS;
-		$delete = t3lib_div::_GP('delete');
-		if (!empty($delete)) {
-			$this->solrConnection->commit();
-			$this->solrConnection->deleteByQuery('id:' . $delete);
-			$this->solrConnection->commit();
-		}
+
+		// check delete
+		$this->solrAdminConnection->checkDelete();
+
+		// url params
 		$pointer = t3lib_div::_GP('pointer');
 		$query = t3lib_div::_GP('query');
 		$solrfields = t3lib_div::_GP('solrfields');
 		$offset = ($pointer !== null) ? intval($pointer) : 0;
 		$limit = $this->nbElementsPerPage;
-		$fields = ($solrfields !== null) ? $solrfields : array('id', 'site', 'title', 'created', 'url');
+		$fields = ($solrfields !== null) ? $solrfields : array('id', 'site', 'title', 'indexed', 'url');
 		$actionURL = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		if (empty($query)) {
 			$query = '*:*';
 		}
-		$actionURL .= '&query=' . $query;
+		$actionURL .= '&query=' . $query . '&nbPerPage=' . $limit;
 		$params = array('qt' => 'standard');
-		$search = $this->solrConnection->search($query, $offset, $limit, $params);
-		$response = json_decode($search->getRawResponse());
-		$content = '';
-		$content .= $GLOBALS['LANG']->getLL('query') . ' : <input type="text" name="query" value="' . $query . '" size="100"/> <input type="submit" value="' . $GLOBALS['LANG']->getLL('search') . '" /><br/>';
-		$content .= '<table cellspacing="1" cellpadding="2" border="0" class="tx_sv_reportlist typo3-dblist">';
-		$content .= '<tr class="t3-row-header"><td colspan="10">';
-		$numTotal = intval($response->response->numFound);
-		$content .= $GLOBALS['LANG']->getLL('results') . ' : ' . $numTotal . ' ' . $GLOBALS['LANG']->getLL('records');
-		$content .= '</td></tr>';
-		$content .= '<tr class="c-headLine">';
-		foreach ($fields as $field) {
-			$content .= '<td class="cell" align="center">' . strtoupper($field) . '</td>';
-		}
-		$content .= '<td class="cell" align="center">&nbsp;</td>';
-		$content .= '</tr>';
-		foreach ($response->response->docs as $doc) {
-			$content .= '<tr class="db_list_normal">';
-			foreach ($fields as $field) {
-				if (is_array($doc->$field)) {
-					$content .= '<td class="cell">' . implode('<br/>', $doc->$field) . '</td>';
-				} else {
-					$content .= '<td class="cell">' . $doc->$field . '</td>';
-				}
+
+		$solrfields = t3lib_div::_GP('solrfields');
+		if (!empty($solrfields)) {
+			$i = 0;
+			foreach ($solrfields as $solrfield) {
+				$actionURL .= '&solrfields[' . $i++ . ']=' . $solrfield;
 			}
-			$content .= '<td class="cell"><a onclick="deleteRecord(\'' . $actionURL . '&delete=' . $doc->id . '\');"><img src="' . t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'sysext/t3skin/icons/gfx/garbage.gif"/></a></td>';
-			$content .= '</tr>';
 		}
-		$content .= '</table>';
-		$this->content .= $content . '<br/>';
-		$this->content .= $this->renderListNavigation($numTotal, $this->nbElementsPerPage, $pointer) . '<br/>';
-		$this->content .= $this->getSelectFields($fields) . '&nbsp;&nbsp;';
-		$this->content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('filter') . '" /><br/><br/><br/>';
+
+		if (!empty($pointer)) {
+			$actionURL .= '&pointer=' . $pointer;
+		}
+
+		$this->solrAdminConnection->setCurrentUrl($actionURL);
+
+		$solrid = t3lib_div::_GP('solrid');
+
+		if (!empty($solrid)) {
+			// search
+			$response = $this->solrAdminConnection->search('id:' . $this->solrAdminConnection->escape($solrid), 0, 1000, $params);
+
+			// single view
+			$this->content .= $this->solrAdminConnection->renderRecord($response);
+		} else {
+			// search
+			$response = $this->solrAdminConnection->search($query, $offset, $limit, $params);
+
+			// table view
+			$content = '';
+			$content .= $GLOBALS['LANG']->getLL('query') . ' : <input type="text" name="query" value="' . htmlspecialchars($query) . '" size="100"/><input type="submit" value="' . $GLOBALS['LANG']->getLL('search') . '" />';
+			$content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openjson') . '</strong></a>';
+			$content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params, TRUE) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openxml') . '</strong></a>';
+			$content .= $this->solrAdminConnection->renderRecords($response, $fields);
+			$this->content .= $content . '<br/>';
+
+			// page browser
+			$this->content .= $this->renderListNavigation(intval($response->response->numFound), $this->nbElementsPerPage, $pointer) . '<br/>';
+
+			// select fields
+			$this->content .= $this->getSelectFields($fields) . '&nbsp;&nbsp;';
+			$this->content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('filter') . '" /><br/><br/><br/>';
+		}
 	}
 
-	public function getSelectFields($selectedList) {
+	protected function getSelectFields($selectedList) {
 		$content = '';
-		$solrFields = $this->solrConnection->getFieldsMetaData();
+		$solrFields = $this->solrAdminConnection->getSolrConnection()->getFieldsMetaData();
 		$solrFieldsList = array_keys(get_object_vars($solrFields));
 		$content .= '<select name="solrfields[]" multiple="multiple" size="10" style="width:300px;">';
 		foreach ($solrFieldsList as $solrField) {
@@ -286,15 +290,15 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		if (!empty($solraction)) {
 			switch ($solraction) {
 				case 'emptyIndex':
-					$this->solrConnection->commit();
-					$this->solrConnection->deleteByQuery('*:*');
-					$this->solrConnection->commit();
+					$this->solrAdminConnection->getSolrConnection()->commit();
+					$this->solrAdminConnection->getSolrConnection()->deleteByQuery('*:*');
+					$this->solrAdminConnection->getSolrConnection()->commit();
 					break;
 				case 'commit':
-					$this->solrConnection->commit();
+					$this->solrAdminConnection->getSolrConnection()->commit();
 					break;
 				case 'optimize':
-					$this->solrConnection->optimize();
+					$this->solrAdminConnection->getSolrConnection()->optimize();
 					break;
 			}
 		}

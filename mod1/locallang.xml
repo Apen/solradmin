@@ -20,6 +20,12 @@
 			<label index="empty">Empty Index and Commit</label>
 			<label index="commit">Commit Pending Documents</label>
 			<label index="optimize">Optimize Index</label>
+			<label index="openjson">Open JSON query</label>
+			<label index="openxml">Open XML query</label>
+			<label index="opentab">Open in a new tab</label>
+			<label index="back">back</label>
+			<label index="nodata">No data in the index for this page</label>
+			<label index="nosolrconf">Select a page with a solr configuration</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="function2">Rechercher des enregistrements</label>
@@ -33,6 +39,12 @@
 			<label index="empty">Vider tout l'index et valider</label>
 			<label index="commit">Valider les documents en attente</label>
 			<label index="optimize">Optimiser l'index</label>
+			<label index="openjson">Ouvrir la requête JSON</label>
+			<label index="openxml">Ouvrir la requête XML</label>
+			<label index="opentab">Ouvrir dans un nouvel onglet</label>
+			<label index="back">retour</label>
+			<label index="nodata">Pas de données dans l'index pour cette page</label>
+			<label index="nosolrconf">Sélectionner une page avec une configuration Solr</label>
 		</languageKey>
 	</data>
 </T3locallang>
