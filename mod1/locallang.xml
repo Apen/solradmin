@@ -26,6 +26,7 @@
 			<label index="back">back</label>
 			<label index="nodata">No data in the index for this page</label>
 			<label index="nosolrconf">Select a page with a solr configuration</label>
+			<label index="or">OR</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="function2">Rechercher des enregistrements</label>
@@ -45,6 +46,7 @@
 			<label index="back">retour</label>
 			<label index="nodata">Pas de données dans l'index pour cette page</label>
 			<label index="nosolrconf">Sélectionner une page avec une configuration Solr</label>
+			<label index="or">OU</label>
 		</languageKey>
 	</data>
 </T3locallang>

@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 CERDAN Yohann <cerdanyohann@yahoo.fr>
+ *  (c) 2012 CERDAN Yohann <cerdanyohann@yahoo.fr>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -213,15 +213,21 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		// url params
 		$pointer = t3lib_div::_GP('pointer');
 		$query = t3lib_div::_GP('query');
+		$urlquery = t3lib_div::_GP('urlquery');
 		$solrfields = t3lib_div::_GP('solrfields');
 		$offset = ($pointer !== null) ? intval($pointer) : 0;
 		$limit = $this->nbElementsPerPage;
 		$fields = ($solrfields !== null) ? $solrfields : array('id', 'site', 'title', 'indexed', 'url');
-		$actionURL = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
+		$baseActionURL = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		if (empty($query)) {
 			$query = '*:*';
 		}
-		$actionURL .= '&query=' . $query . '&nbPerPage=' . $limit;
+		if (empty($urlquery)) {
+			$urlquery = '';
+		} else {
+			$query = 'url:' . $this->solrAdminConnection->escapeUrlvalue($urlquery);
+		}
+		$actionURL = $baseActionURL . '&query=' . $query . '&nbPerPage=' . $limit;
 		$params = array('qt' => 'standard');
 
 		$solrfields = t3lib_div::_GP('solrfields');
@@ -252,8 +258,12 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 
 			// table view
 			$content = '';
-			$content .= $GLOBALS['LANG']->getLL('query') . ' : <input type="text" name="query" value="' . htmlspecialchars($query) . '" size="100"/><input type="submit" value="' . $GLOBALS['LANG']->getLL('search') . '" />';
-			$content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openjson') . '</strong></a>';
+			$content .= $GLOBALS['LANG']->getLL('query') . ' : <input type="text" name="query" value="' . htmlspecialchars($query) . '" size="30"/>&nbsp;&nbsp;';
+			$content .= $GLOBALS['LANG']->getLL('or') . ' URL : <input type="text" name="urlquery" value="' . htmlspecialchars($urlquery) . '" size="30"/>&nbsp;&nbsp;';
+			$content .= '<input type="hidden" name="pointer" value="0" />&nbsp;&nbsp;';
+			$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('search') . '" />&nbsp;&nbsp;';
+			$content .= '<a href="' . $baseActionURL . '&query=*:*&nbPerPage=' . $limit . '"><strong>Reset</strong></a>';
+			$content .= '&nbsp;&nbsp;|&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openjson') . '</strong></a>';
 			$content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params, TRUE) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openxml') . '</strong></a>';
 			$content .= $this->solrAdminConnection->renderRecords($response, $fields);
 			$this->content .= $content . '<br/>';

@@ -3,7 +3,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2011 CERDAN Yohann <cerdanyohann@yahoo.fr>
+ *  (c) 2012 CERDAN Yohann <cerdanyohann@yahoo.fr>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -89,10 +89,28 @@ class tx_solradmin_connection
 				if (is_array($doc->$field)) {
 					$content .= '<td class="cell">' . implode('<br/>', $doc->$field) . '</td>';
 				} else {
-					if ($field == 'id') {
-						$content .= '<td class="cell"><a href="' . $this->currentUrl . '&solrid=' . $doc->$field . '">' . $doc->$field . '</a></td>';
-					} else {
-						$content .= '<td class="cell">' . $doc->$field . '</td>';
+
+					switch ($field) {
+						case 'id':
+							$content .= '<td class="cell">' . $doc->$field . '';
+							$content .= '<a href="' . $this->currentUrl . '&solrid=' . $doc->$field . '">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+							break;
+						case 'url':
+							$content .= '<td class="cell">' . $doc->$field . '';
+							$currentUrl = $doc->$field;
+							if (strpos($currentUrl, 'http') === 0) {
+								$content .= '<a href="' . $currentUrl . '" target="_blank">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+							} else {
+								if (!empty($doc->site) && !empty($doc->url)) {
+									$content .= '<a href="' . $doc->site . $currentUrl . '" target="_blank">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+								} else {
+									$content .= '</td>';
+								}
+							}
+							break;
+						default:
+							$content .= '<td class="cell">' . $doc->$field . '</td>';
+							break;
 					}
 				}
 			}
@@ -137,6 +155,12 @@ class tx_solradmin_connection
 		return preg_replace($pattern, $replace, $value);
 	}
 
+	public function escapeUrlvalue($value) {
+		$pattern = '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|~|\?|:|\\\)/';
+		$replace = '\\\$1';
+		return preg_replace($pattern, $replace, $value);
+	}
+
 	protected function _generateQueryString($params) {
 		if (version_compare(phpversion(), '5.1.3', '<')) {
 			$queryString = http_build_query($params, null, $this->_queryStringDelimiter);
@@ -149,6 +173,7 @@ class tx_solradmin_connection
 	}
 
 	public function setCurrentUrl($currentUrl) {
+		$currentUrl = str_replace('http\:', 'http\\\:', $currentUrl);
 		$this->currentUrl = $currentUrl;
 	}
 
