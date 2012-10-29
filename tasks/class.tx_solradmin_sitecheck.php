@@ -45,9 +45,11 @@ class tx_solradmin_sitecheck extends tx_scheduler_Task
 		$params = array('qt' => 'standard');
 		$response = $this->solrAdminConnection->search($query, $offset, $limit, $params);
 
-		echo '---------------------------------------------' . LF;
-		echo 'Checking query "' . $query . '" (' . intval($response->response->numFound) . ' results) --> limit ' . $limit . LF;
-		echo '---------------------------------------------' . LF;
+		if (defined('TYPO3_cliMode') && TYPO3_cliMode) {
+			echo '---------------------------------------------' . LF;
+			echo 'Checking query "' . $query . '" (' . intval($response->response->numFound) . ' results) --> limit ' . $limit . LF;
+			echo '---------------------------------------------' . LF;
+		}
 
 		foreach ($response->response->docs as $doc) {
 			if (substr($doc->url, 0, 4) == 'http') {
@@ -65,9 +67,13 @@ class tx_solradmin_sitecheck extends tx_scheduler_Task
 		}
 
 		if (empty($this->delete)) {
-			echo 'Just checking url and not delete them...' . LF;
+			if (defined('TYPO3_cliMode') && TYPO3_cliMode) {
+				echo 'Just checking url and not delete them...' . LF;
+			}
 		} else {
-			echo 'Check and delete url...' . LF;
+			if (defined('TYPO3_cliMode') && TYPO3_cliMode) {
+				echo 'Check and delete url...' . LF;
+			}
 			foreach ($this->urlDelete as $deleteRecord) {
 				$delete = tx_solradmin_connection::escape($deleteRecord['id']);
 				$this->solrAdminConnection->getSolrConnection()->commit();
@@ -76,10 +82,12 @@ class tx_solradmin_sitecheck extends tx_scheduler_Task
 			}
 		}
 
-		echo '---------------------------------------------' . LF;
-		echo 'Bad urls (' . count($this->urlDelete) . ' results)' . LF;
-		echo '---------------------------------------------' . LF;
-		print_r($this->urlDelete);
+		if (defined('TYPO3_cliMode') && TYPO3_cliMode) {
+			echo '---------------------------------------------' . LF;
+			echo 'Bad urls (' . count($this->urlDelete) . ' results)' . LF;
+			echo '---------------------------------------------' . LF;
+			print_r($this->urlDelete);
+		} 
 
 		return TRUE;
 	}
