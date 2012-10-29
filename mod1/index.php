@@ -332,10 +332,16 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		// Show page selector if not all records fit into one page
 		$first = $previous = $next = $last = $reload = '';
 		$query = t3lib_div::_GP('query');
+		$urlquery = t3lib_div::_GP('urlquery');
 		$solrfields = t3lib_div::_GP('solrfields');
 		$listURLOrig = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		$listURL = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		$listURL .= '&nbPerPage=' . $this->nbElementsPerPage;
+		if (empty($urlquery)) {
+			$urlquery = '';
+		} else {
+			$query = 'url:' . $this->solrAdminConnection->escapeUrlvalue($urlquery);
+		}
 		if (!empty($query)) {
 			$listURL .= '&query=' . $query;
 		}

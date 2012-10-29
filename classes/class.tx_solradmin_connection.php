@@ -148,7 +148,7 @@ class tx_solradmin_connection
 		}
 	}
 
-	public function escape($value) {
+	public static function escape($value) {
 		//list taken from http://lucene.apache.org/java/docs/queryparsersyntax.html#Escaping%20Special%20Characters
 		$pattern = '/(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|~|\*|\?|:|\\\)/';
 		$replace = '\\\$1';

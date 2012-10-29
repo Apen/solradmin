@@ -1,52 +1,56 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <T3locallang>
-	<meta type="array">
-		<type>module</type>
-		<description>Language labels for module &quot;tools_txsolradminM1&quot;</description>
-	</meta>
-	<data type="array">
-		<languageKey index="default" type="array">
-			<label index="title">Solr Admin</label>
-			<label index="function1">Solr Administration module</label>
-			<label index="function2">Search records</label>
-			<label index="function3">TYPO3 Solr Administration module</label>
-			<label index="areyousure">Are you sure that you want to delete this record ?</label>
-			<label index="results">Results</label>
-			<label index="records">record(s)</label>
-			<label index="search">Search</label>
-			<label index="filter">Filter</label>
-			<label index="query">Query</label>
-			<label index="iframeback">Back in the IFrame</label>
-			<label index="empty">Empty Index and Commit</label>
-			<label index="commit">Commit Pending Documents</label>
-			<label index="optimize">Optimize Index</label>
-			<label index="openjson">Open JSON query</label>
-			<label index="openxml">Open XML query</label>
-			<label index="opentab">Open in a new tab</label>
-			<label index="back">back</label>
-			<label index="nodata">No data in the index for this page</label>
-			<label index="nosolrconf">Select a page with a solr configuration</label>
-			<label index="or">OR</label>
-		</languageKey>
-		<languageKey index="fr" type="array">
-			<label index="function2">Rechercher des enregistrements</label>
-			<label index="areyousure">Etes-vous sur de vouloir supprimer cet enregistrement ?</label>
-			<label index="results">Résultats</label>
-			<label index="records">enregistrement(s)</label>
-			<label index="search">Rechercher</label>
-			<label index="filter">Filtrer</label>
-			<label index="query">Requête</label>
-			<label index="iframeback">Précédent dans l'IFrame</label>
-			<label index="empty">Vider tout l'index et valider</label>
-			<label index="commit">Valider les documents en attente</label>
-			<label index="optimize">Optimiser l'index</label>
-			<label index="openjson">Ouvrir la requête JSON</label>
-			<label index="openxml">Ouvrir la requête XML</label>
-			<label index="opentab">Ouvrir dans un nouvel onglet</label>
-			<label index="back">retour</label>
-			<label index="nodata">Pas de données dans l'index pour cette page</label>
-			<label index="nosolrconf">Sélectionner une page avec une configuration Solr</label>
-			<label index="or">OU</label>
-		</languageKey>
-	</data>
+    <meta type="array">
+        <type>module</type>
+        <description>Language labels for module &quot;tools_txsolradminM1&quot;</description>
+    </meta>
+    <data type="array">
+        <languageKey index="default" type="array">
+            <label index="title">Solr Admin</label>
+            <label index="function1">Solr Administration module</label>
+            <label index="function2">Search records</label>
+            <label index="function3">TYPO3 Solr Administration module</label>
+            <label index="areyousure">Are you sure that you want to delete this record ?</label>
+            <label index="results">Results</label>
+            <label index="records">record(s)</label>
+            <label index="search">Search</label>
+            <label index="filter">Filter</label>
+            <label index="query">Query</label>
+            <label index="iframeback">Back in the IFrame</label>
+            <label index="empty">Empty Index and Commit</label>
+            <label index="commit">Commit Pending Documents</label>
+            <label index="optimize">Optimize Index</label>
+            <label index="openjson">Open JSON query</label>
+            <label index="openxml">Open XML query</label>
+            <label index="opentab">Open in a new tab</label>
+            <label index="back">back</label>
+            <label index="nodata">No data in the index for this page</label>
+            <label index="nosolrconf">Select a page with a solr configuration</label>
+            <label index="or">OR</label>
+            <label index="task.sitecheck.name">Solr Site Check</label>
+            <label index="task.sitecheck.name">Check and delete 404 errors of a solr index</label>
+        </languageKey>
+        <languageKey index="fr" type="array">
+            <label index="function2">Rechercher des enregistrements</label>
+            <label index="areyousure">Etes-vous sur de vouloir supprimer cet enregistrement ?</label>
+            <label index="results">Résultats</label>
+            <label index="records">enregistrement(s)</label>
+            <label index="search">Rechercher</label>
+            <label index="filter">Filtrer</label>
+            <label index="query">Requête</label>
+            <label index="iframeback">Précédent dans l'IFrame</label>
+            <label index="empty">Vider tout l'index et valider</label>
+            <label index="commit">Valider les documents en attente</label>
+            <label index="optimize">Optimiser l'index</label>
+            <label index="openjson">Ouvrir la requête JSON</label>
+            <label index="openxml">Ouvrir la requête XML</label>
+            <label index="opentab">Ouvrir dans un nouvel onglet</label>
+            <label index="back">retour</label>
+            <label index="nodata">Pas de données dans l'index pour cette page</label>
+            <label index="nosolrconf">Sélectionner une page avec une configuration Solr</label>
+            <label index="or">OU</label>
+            <label index="task.sitecheck.name">Vérification de site Solr</label>
+            <label index="task.sitecheck.name">Vérifie et supprime les erreurs 404 d'un index Solr</label>
+        </languageKey>
+    </data>
 </T3locallang>

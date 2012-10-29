@@ -17,4 +17,15 @@ if (TYPO3_MODE == 'BE') {
 	);
 }
 
+$tasks = array('sitecheck');
+
+foreach ($tasks as $task) {
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks']['tx_' . $_EXTKEY . '_' . $task] = array(
+		'extension'        => $_EXTKEY,
+		'title'            => 'LLL:EXT:' . $_EXTKEY . '/mod1/locallang.xml:task.' . $task . '.name',
+		'description'      => 'LLL:EXT:' . $_EXTKEY . '/mod1/locallang.xml:task.' . $task . '.description',
+		'additionalFields' => 'tx_' . $_EXTKEY . '_' . $task . '_fields'
+	);
+}
+
 ?>
