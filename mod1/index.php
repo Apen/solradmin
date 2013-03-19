@@ -31,8 +31,8 @@ $BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the user
 /**
  * Module 'Solr Admin' for the 'solradmin' extension.
  *
- * @author    CERDAN Yohann <cerdanyohann@yahoo.fr>
- * @package    TYPO3
+ * @author        CERDAN Yohann <cerdanyohann@yahoo.fr>
+ * @package       TYPO3
  * @subpackage    tx_solradmin
  */
 
@@ -51,7 +51,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		global $BE_USER, $LANG, $BACK_PATH, $TCA_DESCR, $TCA, $CLIENT, $TYPO3_CONF_VARS;
 		// Check nb per page
 		$nbPerPage = t3lib_div::_GP('nbPerPage');
-		if ($nbPerPage !== null) {
+		if ($nbPerPage !== NULL) {
 			$this->nbElementsPerPage = $nbPerPage;
 		}
 		parent::init();
@@ -115,7 +115,8 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 				</script>
 			';
 
-			$headerSection = $this->doc->getHeader('pages', $this->pageinfo, $this->pageinfo['_thePath']) . '<br />' . $LANG->sL('LLL:EXT:lang/locallang_core.xml:labels.path') . ': ' . t3lib_div::fixed_lgd_cs($this->pageinfo['_thePath'], 50);
+			$headerSection = $this->doc->getHeader('pages', $this->pageinfo, $this->pageinfo['_thePath']) . '<br />' . $LANG->sL('LLL:EXT:lang/locallang_core.xml:labels.path'
+			) . ': ' . t3lib_div::fixed_lgd_cs($this->pageinfo['_thePath'], 50);
 			$this->content .= $this->doc->startPage($LANG->getLL('title'));
 			$this->content .= $this->doc->header($LANG->getLL('title'));
 			$this->content .= $this->doc->spacer(5);
@@ -143,12 +144,17 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 				} else {
 					$selected = '';
 				}
-				$selectSolr .= '<option value="' . $index . '"' . $selected . '>' . $solrConnection->getScheme() . '://' . $solrConnection->getHost() . ':' . $solrConnection->getPort() . $solrConnection->getPath() . ' [' . $index . ']</option>';
+				$selectSolr .= '<option value="' . $index . '"' . $selected . '>' . $solrConnection->getScheme() . '://' . $solrConnection->getHost() . ':' . $solrConnection->getPort(
+				) . $solrConnection->getPath() . ' [' . $index . ']</option>';
 				$index++;
 			}
 			$selectSolr .= '</select>';
 
-			$this->content .= $this->doc->section('', $this->doc->funcMenu($headerSection, t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']) . $selectSolr));
+			$this->content .= $this->doc->section('', $this->doc->funcMenu($headerSection,
+			                                                               t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']
+			                                                               ) . $selectSolr
+			                                        )
+			);
 			$this->content .= $this->doc->divider(5);
 			$this->moduleContent();
 		} else {
@@ -215,9 +221,9 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		$query = t3lib_div::_GP('query');
 		$urlquery = t3lib_div::_GP('urlquery');
 		$solrfields = t3lib_div::_GP('solrfields');
-		$offset = ($pointer !== null) ? intval($pointer) : 0;
+		$offset = ($pointer !== NULL) ? intval($pointer) : 0;
 		$limit = $this->nbElementsPerPage;
-		$fields = ($solrfields !== null) ? $solrfields : array('id', 'site', 'title', 'indexed', 'url');
+		$fields = ($solrfields !== NULL) ? $solrfields : array('id', 'site', 'title', 'indexed', 'url');
 		$baseActionURL = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		if (empty($query)) {
 			$query = '*:*';
@@ -227,7 +233,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		} else {
 			$query = 'url:' . $this->solrAdminConnection->escapeUrlvalue($urlquery);
 		}
-		$actionURL = $baseActionURL . '&query=' . $query . '&nbPerPage=' . $limit;
+		$actionURL = $baseActionURL . '&query=' . urlencode($query) . '&nbPerPage=' . $limit;
 		$params = array('qt' => 'standard');
 
 		$solrfields = t3lib_div::_GP('solrfields');
@@ -263,8 +269,10 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 			$content .= '<input type="hidden" name="pointer" value="0" />&nbsp;&nbsp;';
 			$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('search') . '" />&nbsp;&nbsp;';
 			$content .= '<a href="' . $baseActionURL . '&query=*:*&nbPerPage=' . $limit . '"><strong>Reset</strong></a>';
-			$content .= '&nbsp;&nbsp;|&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openjson') . '</strong></a>';
-			$content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params, TRUE) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openxml') . '</strong></a>';
+			$content .= '&nbsp;&nbsp;|&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params
+			) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openjson') . '</strong></a>';
+			$content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params, TRUE) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openxml'
+			) . '</strong></a>';
 			$content .= $this->solrAdminConnection->renderRecords($response, $fields);
 			$this->content .= $content . '<br/>';
 
@@ -314,7 +322,8 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		}
 		$content = '';
 		$content .= '<input type="hidden" id="solraction" name="solraction" value="" />';
-		$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('empty') . '" name="s_emptyIndex" onclick="Check = confirm(\'' . $GLOBALS['LANG']->getLL('areyousure') . '\'); if (Check == true) document.forms[0].solraction.value=\'emptyIndex\';" /><br /><br />';
+		$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('empty') . '" name="s_emptyIndex" onclick="Check = confirm(\'' . $GLOBALS['LANG']->getLL('areyousure'
+		) . '\'); if (Check == true) document.forms[0].solraction.value=\'emptyIndex\';" /><br /><br />';
 		$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('commit') . '" name="s_commitPendingDocuments" onclick="document.forms[0].solraction.value=\'commit\';" /><br /><br />';
 		$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('optimize') . '" name="s_optimizeIndex" onclick="document.forms[0].solraction.value=\'optimize\';" /><br /><br />';
 		$this->content .= $content;
@@ -343,7 +352,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 			$query = 'url:' . $this->solrAdminConnection->escapeUrlvalue($urlquery);
 		}
 		if (!empty($query)) {
-			$listURL .= '&query=' . $query;
+			$listURL .= '&query=' . urlencode($query);
 		}
 		if (!empty($solrfields)) {
 			$i = 0;
@@ -383,8 +392,8 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 
 		$pageNumberInput = '<span>' . $currentPage . '</span>';
 		$pageIndicator = '<span class="pageIndicator">'
-				. sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_web_list.xml:pageIndicator'), $pageNumberInput, $totalPages)
-				. '</span>';
+			. sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_web_list.xml:pageIndicator'), $pageNumberInput, $totalPages)
+			. '</span>';
 
 		if ($totalItems > ($firstElementNumber + $iLimit)) {
 			$lastElementNumber = $firstElementNumber + $iLimit;
@@ -393,16 +402,16 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		}
 
 		$rangeIndicator = '<span class="pageIndicator">'
-				. sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_web_list.xml:rangeIndicator'), $firstElementNumber + 1, $lastElementNumber)
-				. '</span>';
+			. sprintf($GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_mod_web_list.xml:rangeIndicator'), $firstElementNumber + 1, $lastElementNumber)
+			. '</span>';
 
 		$content .= '<div id="typo3-dblist-pagination">'
-				. $first . $previous
-				. '<span class="bar">&nbsp;</span>'
-				. $rangeIndicator . '<span class="bar">&nbsp;</span>'
-				. $pageIndicator . '<span class="bar">&nbsp;</span>'
-				. $next . $last
-				. '</div>';
+			. $first . $previous
+			. '<span class="bar">&nbsp;</span>'
+			. $rangeIndicator . '<span class="bar">&nbsp;</span>'
+			. $pageIndicator . '<span class="bar">&nbsp;</span>'
+			. $next . $last
+			. '</div>';
 
 		$returnContent = $content;
 
