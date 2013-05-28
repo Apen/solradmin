@@ -128,7 +128,7 @@ class tx_solradmin_connection
 			foreach ($doc as $field => $fieldValue) {
 				$content .= '<h4>' . $field . '</h4>';
 				if (is_array($fieldValue)) {
-					$content .= '<p>' . t3lib_div::view_array($fieldValue) . '</p>';
+					$content .= '<p>' . $this->viewArray($fieldValue) . '</p>';
 				} else {
 					$content .= '<p>' . $fieldValue . '</p>';
 				}
@@ -179,6 +179,47 @@ class tx_solradmin_connection
 
 	public function getSolrConnection() {
 		return $this->solrConnection;
+	}
+	
+	/**
+	 * Print a debug of an array
+	 *
+	 * @param array $arrayIn
+	 * @return string
+	 */
+	public static function viewArray($arrayIn) {
+		if (is_array($arrayIn)) {
+			$result = '<table class="debug" border="1" cellpadding="0" cellspacing="0" bgcolor="white" width="100%">';
+			if (count($arrayIn) == 0) {
+				$result .= '<tr><td><strong>EMPTY!</strong></td></tr>';
+			} else {
+				foreach ($arrayIn as $key => $val) {
+					$result .= '<tr><td>' . htmlspecialchars((string)$key) . '</td><td class="debugvar">';
+					if (is_array($val)) {
+						$result .= self::viewArray($val);
+					} elseif (is_object($val)) {
+						$string = get_class($val);
+						if (method_exists($val, '__toString')) {
+							$string .= ': ' . (string)$val;
+						}
+						$result .= nl2br(htmlspecialchars($string)) . '<br />';
+					} else {
+						if (gettype($val) == 'object') {
+							$string = 'Unknown object';
+						} else {
+							$string = (string)$val;
+						}
+						$result .= nl2br(htmlspecialchars($string)) . '<br />';
+					}
+					$result .= '</td></tr>';
+				}
+			}
+			$result .= '</table>';
+		} else {
+			$result = '<table class="debug" border="0" cellpadding="0" cellspacing="0" bgcolor="white">';
+			$result .= '<tr><td class="debugvar">' . nl2br(htmlspecialchars((string)$arrayIn)) . '</td></tr></table>';
+		}
+		return $result;
 	}
 }
 
