@@ -93,7 +93,7 @@ class tx_solradmin_connection
 					switch ($field) {
 						case 'id':
 							$content .= '<td class="cell">' . $doc->$field . '';
-							$content .= '<a href="' . $this->currentUrl . '&solrid=' . $doc->$field . '">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+							$content .= '<a href="' . $this->currentUrl . '&solrid=' . rawurlencode($doc->$field) . '">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
 							break;
 						case 'url':
 							$content .= '<td class="cell">' . $doc->$field . '';
