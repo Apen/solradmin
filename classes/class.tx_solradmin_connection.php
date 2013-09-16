@@ -23,8 +23,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class tx_solradmin_connection
-{
+class tx_solradmin_connection {
 	protected $solrConnection = NULL;
 	protected $scheme = '';
 	protected $host = '';
@@ -93,16 +92,22 @@ class tx_solradmin_connection
 					switch ($field) {
 						case 'id':
 							$content .= '<td class="cell">' . $doc->$field . '';
-							$content .= '<a href="' . $this->currentUrl . '&solrid=' . rawurlencode($doc->$field) . '">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+							$content .= '<a href="' . $this->currentUrl . '&solrid=' . $doc->$field . '">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL'
+								) . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
 							break;
 						case 'url':
 							$content .= '<td class="cell">' . $doc->$field . '';
 							$currentUrl = $doc->$field;
 							if (strpos($currentUrl, 'http') === 0) {
-								$content .= '<a href="' . $currentUrl . '" target="_blank">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+								$content .= '<a href="' . $currentUrl . '" target="_blank">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL'
+									) . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
 							} else {
 								if (!empty($doc->site) && !empty($doc->url)) {
-									$content .= '<a href="' . $doc->site . $currentUrl . '" target="_blank">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+									if (strpos($currentUrl, 'http') === FALSE) {
+										$doc->site = 'http://' . $doc->site . '/';
+									}
+									$content .= '<a href="' . $doc->site . $currentUrl . '" target="_blank">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR'
+										) . 'sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
 								} else {
 									$content .= '</td>';
 								}
@@ -114,7 +119,8 @@ class tx_solradmin_connection
 					}
 				}
 			}
-			$content .= '<td class="cell"><a onclick="deleteRecord(\'' . $this->currentUrl . '&delete=' . $doc->id . '\');"><img style="cursor:pointer;" src="' . t3lib_div::getIndpEnv('TYPO3_SITE_PATH') . 'typo3/sysext/t3skin/icons/gfx/garbage.gif"/></a></td>';
+			$content .= '<td class="cell"><a onclick="deleteRecord(\'' . $this->currentUrl . '&delete=' . $doc->id . '\');"><img style="cursor:pointer;" src="' . t3lib_div::getIndpEnv('TYPO3_SITE_PATH'
+				) . 'typo3/sysext/t3skin/icons/gfx/garbage.gif"/></a></td>';
 			$content .= '</tr>';
 		}
 		$content .= '</table>';
@@ -128,7 +134,7 @@ class tx_solradmin_connection
 			foreach ($doc as $field => $fieldValue) {
 				$content .= '<h4>' . $field . '</h4>';
 				if (is_array($fieldValue)) {
-					$content .= '<p>' . $this->viewArray($fieldValue) . '</p>';
+					$content .= '<p>' . t3lib_div::view_array($fieldValue) . '</p>';
 				} else {
 					$content .= '<p>' . $fieldValue . '</p>';
 				}
@@ -163,10 +169,9 @@ class tx_solradmin_connection
 
 	protected function _generateQueryString($params) {
 		if (version_compare(phpversion(), '5.1.3', '<')) {
-			$queryString = http_build_query($params, null, $this->_queryStringDelimiter);
+			$queryString = http_build_query($params, NULL, $this->_queryStringDelimiter);
 			return preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $queryString);
-		}
-		else {
+		} else {
 			$queryString = http_build_query($params);
 			return preg_replace('/\\[(?:[0-9]|[1-9][0-9]+)\\]=/', '=', $queryString);
 		}
@@ -179,47 +184,6 @@ class tx_solradmin_connection
 
 	public function getSolrConnection() {
 		return $this->solrConnection;
-	}
-	
-	/**
-	 * Print a debug of an array
-	 *
-	 * @param array $arrayIn
-	 * @return string
-	 */
-	public static function viewArray($arrayIn) {
-		if (is_array($arrayIn)) {
-			$result = '<table class="debug" border="1" cellpadding="0" cellspacing="0" bgcolor="white" width="100%">';
-			if (count($arrayIn) == 0) {
-				$result .= '<tr><td><strong>EMPTY!</strong></td></tr>';
-			} else {
-				foreach ($arrayIn as $key => $val) {
-					$result .= '<tr><td>' . htmlspecialchars((string)$key) . '</td><td class="debugvar">';
-					if (is_array($val)) {
-						$result .= self::viewArray($val);
-					} elseif (is_object($val)) {
-						$string = get_class($val);
-						if (method_exists($val, '__toString')) {
-							$string .= ': ' . (string)$val;
-						}
-						$result .= nl2br(htmlspecialchars($string)) . '<br />';
-					} else {
-						if (gettype($val) == 'object') {
-							$string = 'Unknown object';
-						} else {
-							$string = (string)$val;
-						}
-						$result .= nl2br(htmlspecialchars($string)) . '<br />';
-					}
-					$result .= '</td></tr>';
-				}
-			}
-			$result .= '</table>';
-		} else {
-			$result = '<table class="debug" border="0" cellpadding="0" cellspacing="0" bgcolor="white">';
-			$result .= '<tr><td class="debugvar">' . nl2br(htmlspecialchars((string)$arrayIn)) . '</td></tr></table>';
-		}
-		return $result;
 	}
 }
 
