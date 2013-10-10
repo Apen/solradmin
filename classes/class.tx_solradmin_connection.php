@@ -185,6 +185,23 @@ class tx_solradmin_connection {
 	public function getSolrConnection() {
 		return $this->solrConnection;
 	}
+
+	/**
+	 * Central method for making a post operation against this Solr Server
+	 *
+	 * @param string $url
+	 * @param string $rawPost
+	 * @param float  $timeout Read timeout in seconds
+	 * @param string $contentType
+	 * @return Apache_Solr_Response
+	 *
+	 * @throws Apache_Solr_HttpTransportException If a non 200 response status is returned
+	 */
+	public function add($rawPost) {
+		$responde = $this->solrConnection->add($rawPost);
+		$this->solrConnection->commit();
+		return $responde;
+	}
 }
 
 ?>

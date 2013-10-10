@@ -7,7 +7,7 @@
     <data type="array">
         <languageKey index="default" type="array">
             <label index="title">Solr Admin</label>
-            <label index="function1">Solr Administration module</label>
+            <label index="function1">Send POST datas to the server</label>
             <label index="function2">Search records</label>
             <label index="function3">TYPO3 Solr Administration module</label>
             <label index="areyousure">Are you sure that you want to delete this record ?</label>
@@ -22,6 +22,7 @@
             <label index="optimize">Optimize Index</label>
             <label index="openjson">Open JSON query</label>
             <label index="openxml">Open XML query</label>
+            <label index="opensolradmin">Open Solr admin</label>
             <label index="opentab">Open in a new tab</label>
             <label index="back">back</label>
             <label index="nodata">No data in the index for this page</label>
@@ -31,6 +32,7 @@
             <label index="task.sitecheck.name">Check and delete 404 errors of a solr index</label>
         </languageKey>
         <languageKey index="fr" type="array">
+            <label index="function1">Envoyer des données en POST</label>
             <label index="function2">Rechercher des enregistrements</label>
             <label index="areyousure">Etes-vous sur de vouloir supprimer cet enregistrement ?</label>
             <label index="results">Résultats</label>
@@ -44,6 +46,7 @@
             <label index="optimize">Optimiser l'index</label>
             <label index="openjson">Ouvrir la requête JSON</label>
             <label index="openxml">Ouvrir la requête XML</label>
+            <label index="opensolradmin">Ouvrir Solr admin</label>
             <label index="opentab">Ouvrir dans un nouvel onglet</label>
             <label index="back">retour</label>
             <label index="nodata">Pas de données dans l'index pour cette page</label>

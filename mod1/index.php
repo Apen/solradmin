@@ -36,14 +36,14 @@ $BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the user
  * @subpackage    tx_solradmin
  */
 
-class  tx_solradmin_module1 extends t3lib_SCbase
-{
+class  tx_solradmin_module1 extends t3lib_SCbase {
 	protected $pageinfo;
 	protected $nbElementsPerPage = 15;
 	protected $beUserSessionDatas = NULL;
 
 	/**
 	 * Initializes the Module
+	 *
 	 * @return    void
 	 */
 
@@ -67,7 +67,6 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		global $LANG;
 		$this->MOD_MENU = Array(
 			'function' => Array(
-				'1' => $LANG->getLL('function1'),
 				'2' => $LANG->getLL('function2'),
 				'3' => $LANG->getLL('function3'),
 			)
@@ -115,11 +114,10 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 				</script>
 			';
 
-			$headerSection = $this->doc->getHeader('pages', $this->pageinfo, $this->pageinfo['_thePath']) . '<br />' . $LANG->sL('LLL:EXT:lang/locallang_core.xml:labels.path'
-			) . ': ' . t3lib_div::fixed_lgd_cs($this->pageinfo['_thePath'], 50);
+			$headerSection = '';
 			$this->content .= $this->doc->startPage($LANG->getLL('title'));
 			$this->content .= $this->doc->header($LANG->getLL('title'));
-			$this->content .= $this->doc->spacer(5);
+			//$this->content .= $this->doc->spacer(5);
 
 			// multi core connections
 			$beUserSession = $GLOBALS['BE_USER']->fetchUserSession();
@@ -145,7 +143,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 					$selected = '';
 				}
 				$selectSolr .= '<option value="' . $index . '"' . $selected . '>' . $solrConnection->getScheme() . '://' . $solrConnection->getHost() . ':' . $solrConnection->getPort(
-				) . $solrConnection->getPath() . ' [' . $index . ']</option>';
+					) . $solrConnection->getPath() . ' [' . $index . ']</option>';
 				$index++;
 			}
 			$selectSolr .= '</select>';
@@ -192,9 +190,6 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 		$this->solrAdminConnection = new tx_solradmin_connection($solrConnections[$this->beUserSessionDatas['indexsolrconnection']]);
 
 		switch ((string)$this->MOD_SETTINGS['function']) {
-			case 1:
-				$this->displaySolrModule();
-				break;
 			case 2:
 				$this->displaySearchRecords();
 				break;
@@ -202,12 +197,6 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 				$this->displayTypo3SolrAdmin();
 				break;
 		}
-	}
-
-	public function displaySolrModule() {
-		$this->content .= '<input type="button" value ="' . $GLOBALS['LANG']->getLL('iframeback') . '" onclick="history.go(-1)"/>';
-		$this->content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->getSolrAdminUrl() . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('opentab') . '</strong></a>';
-		$this->content .= '<br/><br/><iframe src="' . $this->solrAdminConnection->getSolrAdminUrl() . '" style="width:100%;height:600px;border:0px;"></iframe>';
 	}
 
 	public function displaySearchRecords() {
@@ -270,9 +259,10 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 			$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('search') . '" />&nbsp;&nbsp;';
 			$content .= '<a href="' . $baseActionURL . '&query=*:*&nbPerPage=' . $limit . '"><strong>Reset</strong></a>';
 			$content .= '&nbsp;&nbsp;|&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params
-			) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openjson') . '</strong></a>';
+				) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openjson') . '</strong></a>';
 			$content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->searchUrl($query, $offset, $limit, $params, TRUE) . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('openxml'
-			) . '</strong></a>';
+				) . '</strong></a>';
+			$content .= '&nbsp;&nbsp;<a href="' . $this->solrAdminConnection->getSolrAdminUrl() . '" target="_blank"><strong>' . $GLOBALS['LANG']->getLL('opensolradmin') . '</strong></a>';
 			$content .= $this->solrAdminConnection->renderRecords($response, $fields);
 			$this->content .= $content . '<br/>';
 
@@ -305,6 +295,8 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 
 	public function displayTypo3SolrAdmin() {
 		$solraction = t3lib_div::_GP('solraction');
+		$postdatas = t3lib_div::_GP('postdatas');
+
 		if (!empty($solraction)) {
 			switch ($solraction) {
 				case 'emptyIndex':
@@ -320,13 +312,24 @@ class  tx_solradmin_module1 extends t3lib_SCbase
 					break;
 			}
 		}
-		$content = '';
-		$content .= '<input type="hidden" id="solraction" name="solraction" value="" />';
-		$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('empty') . '" name="s_emptyIndex" onclick="Check = confirm(\'' . $GLOBALS['LANG']->getLL('areyousure'
-		) . '\'); if (Check == true) document.forms[0].solraction.value=\'emptyIndex\';" /><br /><br />';
-		$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('commit') . '" name="s_commitPendingDocuments" onclick="document.forms[0].solraction.value=\'commit\';" /><br /><br />';
-		$content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('optimize') . '" name="s_optimizeIndex" onclick="document.forms[0].solraction.value=\'optimize\';" /><br /><br />';
-		$this->content .= $content;
+
+		$this->content .= '<input type="hidden" id="solraction" name="solraction" value="" />';
+		$this->content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('empty') . '" name="s_emptyIndex" onclick="Check = confirm(\'' . $GLOBALS['LANG']->getLL('areyousure'
+			) . '\'); if (Check == true) document.forms[0].solraction.value=\'emptyIndex\';" /><br /><br />';
+		$this->content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('commit'
+			) . '" name="s_commitPendingDocuments" onclick="document.forms[0].solraction.value=\'commit\';" /><br /><br />';
+		$this->content .= '<input type="submit" value="' . $GLOBALS['LANG']->getLL('optimize') . '" name="s_optimizeIndex" onclick="document.forms[0].solraction.value=\'optimize\';" /><br /><br />';
+		$this->content .= '<h3>' . $GLOBALS['LANG']->getLL('function1') . '</h3>';
+		$this->content .= '<textarea name="postdatas" cols="100" rows="20">';
+		if (!empty($postdatas)) {
+			$this->content .= $postdatas;
+			$response = $this->solrAdminConnection->add($postdatas);
+		}
+		$this->content .= '</textarea>';
+		if ((!empty($postdatas)) && ($response->getHttpStatus() != 200)) {
+			$this->content .= '<br/><br/>Error : ' . $response->getHttpStatus() . ' : ' . $response->getHttpStatusMessage();
+		}
+		$this->content .= '<br/><br/><input type="submit"/>';
 	}
 
 	/**
