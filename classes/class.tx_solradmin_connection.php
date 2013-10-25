@@ -134,7 +134,7 @@ class tx_solradmin_connection {
 			foreach ($doc as $field => $fieldValue) {
 				$content .= '<h4>' . $field . '</h4>';
 				if (is_array($fieldValue)) {
-					$content .= '<p>' . t3lib_div::view_array($fieldValue) . '</p>';
+					$content .= '<p>' . self::viewArray($fieldValue) . '</p>';
 				} else {
 					$content .= '<p>' . $fieldValue . '</p>';
 				}
@@ -201,6 +201,57 @@ class tx_solradmin_connection {
 		$responde = $this->solrConnection->add($rawPost);
 		$this->solrConnection->commit();
 		return $responde;
+	}
+
+	/**
+	 * Returns HTML-code, which is a visual representation of a multidimensional array
+	 * use t3lib_div::print_array() in order to print an array
+	 * Returns false if $array_in is not an array
+	 *
+	 * @param    mixed        Array to view
+	 * @return    string        HTML output
+	 */
+	public static function viewArray($array_in) {
+		if (is_array($array_in)) {
+			$result = '<table border="1" cellpadding="1" cellspacing="0" bgcolor="white">';
+			if (count($array_in) == 0) {
+				$result .= '<tr><td><font face="Verdana,Arial" size="1"><strong>EMPTY!</strong></font></td></tr>';
+			} else {
+				foreach ($array_in as $key => $val) {
+					$result .= '<tr><td valign="top"><font face="Verdana,Arial" size="1">' . htmlspecialchars((string)$key) . '</font></td><td>';
+					if (is_array($val)) {
+						$result .= self::viewArray($val);
+					} elseif (is_object($val)) {
+						$string = '';
+						if (method_exists($val, '__toString')) {
+							$string .= get_class($val) . ': ' . (string)$val;
+						} else {
+							$string .= print_r($val, TRUE);
+						}
+						$result .= '<font face="Verdana,Arial" size="1" color="red">' . nl2br(htmlspecialchars($string)) . '<br /></font>';
+					} else {
+						if (gettype($val) == 'object') {
+							$string = 'Unknown object';
+						} else {
+							$string = (string)$val;
+						}
+						$result .= '<font face="Verdana,Arial" size="1" color="red">' . nl2br(htmlspecialchars($string)) . '<br /></font>';
+					}
+					$result .= '</td>
+					</tr>';
+				}
+			}
+			$result .= '</table>';
+		} else {
+			$result = '<table border="1" cellpadding="1" cellspacing="0" bgcolor="white">
+				<tr>
+					<td><font face="Verdana,Arial" size="1" color="red">' .
+				nl2br(htmlspecialchars((string)$array_in)) .
+				'<br /></font></td>
+			</tr>
+		</table>'; // Output it as a string.
+		}
+		return $result;
 	}
 }
 
