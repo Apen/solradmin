@@ -30,6 +30,8 @@
             <label index="or">OR</label>
             <label index="task.sitecheck.name">Solr Site Check</label>
             <label index="task.sitecheck.name">Check and delete 404 errors of a solr index</label>
+            <label index="task.post.name">Solr post xml datas</label>
+            <label index="task.post.name">Solr post xml datas</label>
         </languageKey>
         <languageKey index="fr" type="array">
             <label index="function1">Envoyer des données en POST</label>

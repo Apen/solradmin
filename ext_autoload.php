@@ -1,6 +1,6 @@
 <?php
 
-$tasks = array('sitecheck');
+$tasks = array('sitecheck', 'post');
 $loadArray = array();
 $extensionPath = t3lib_extMgm::extPath('solradmin');
 

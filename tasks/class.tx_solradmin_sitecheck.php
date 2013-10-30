@@ -23,8 +23,7 @@
  ***************************************************************/
 
 
-class tx_solradmin_sitecheck extends tx_scheduler_Task
-{
+class tx_solradmin_sitecheck extends tx_scheduler_Task {
 	protected $urlDelete = array();
 
 	/**
@@ -87,7 +86,7 @@ class tx_solradmin_sitecheck extends tx_scheduler_Task
 			echo 'Bad urls (' . count($this->urlDelete) . ' results)' . LF;
 			echo '---------------------------------------------' . LF;
 			print_r($this->urlDelete);
-		} 
+		}
 
 		return TRUE;
 	}
