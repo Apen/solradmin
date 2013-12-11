@@ -71,9 +71,10 @@ class tx_solradmin_modfunc1 extends t3lib_extobjbase
 			$solrAdminConnection->checkDelete();
 			$site = $solrAdminConnection->escape(t3lib_div::getIndpEnv('TYPO3_SITE_URL'));
 			$host = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
-			$query = 'uid:' . intval($id) . ' AND (site:' . $site . ' OR site:' . $host . ')';
+			//$query = 'uid:' . intval($id) . ' AND (site:' . $site . ' OR site:' . $host . ')';
+			$query = ' (*:* uid:' . intval($id) . ' AND type:pages) OR (*:* pid:' . intval($id) . ' AND NOT type:pages)';
 			$offset = 0;
-			$limit = 15;
+			$limit = 100;
 			$params = array('qt' => 'standard');
 			$solrid = t3lib_div::_GP('solrid');
 			$solrAdminConnection->setCurrentUrl(t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'index.php?id=' . $id);
