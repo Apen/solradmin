@@ -125,12 +125,14 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 			$gpSolrConnections = t3lib_div::_GP('solrconnections');
 			if ($gpSolrConnections !== NULL) {
 				$GLOBALS['BE_USER']->setAndSaveSessionData('indexsolrconnection', $gpSolrConnections);
+				$this->beUserSessionDatas['indexsolrconnection'] = $gpSolrConnections;
 			} else {
 				if (empty($this->beUserSessionDatas['indexsolrconnection'])) {
 					$GLOBALS['BE_USER']->setAndSaveSessionData('indexsolrconnection', 0);
 					$this->beUserSessionDatas['indexsolrconnection'] = 0;
 				} else {
 					$gpSolrConnections = $this->beUserSessionDatas['indexsolrconnection'];
+					$this->beUserSessionDatas['indexsolrconnection'] = $gpSolrConnections;
 				}
 			}
 			$solrConnections = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
