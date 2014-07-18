@@ -35,7 +35,6 @@ $BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the user
  * @package       TYPO3
  * @subpackage    tx_solradmin
  */
-
 class  tx_solradmin_module1 extends t3lib_SCbase {
 	protected $pageinfo;
 	protected $nbElementsPerPage = 15;
@@ -144,8 +143,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 				} else {
 					$selected = '';
 				}
-				$selectSolr .= '<option value="' . $index . '"' . $selected . '>' . $solrConnection->getScheme() . '://' . $solrConnection->getHost() . ':' . $solrConnection->getPort(
-					) . $solrConnection->getPath() . ' [' . $index . ']</option>';
+				$selectSolr .= '<option value="' . $index . '"' . $selected . '>' . $solrConnection->getScheme() . '://' . $solrConnection->getHost() . ':' . $solrConnection->getPort() . $solrConnection->getPath() . ' [' . $index . ']</option>';
 				$index++;
 			}
 			$selectSolr .= '</select>';
@@ -364,6 +362,9 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 			foreach ($solrfields as $solrfield) {
 				$listURL .= '&solrfields[' . $i++ . ']=' . $solrfield;
 			}
+		}
+		if (version_compare(TYPO3_version, '6.2.0', '>=')) {
+			$listURL .= '&moduleToken=' . \TYPO3\CMS\Core\FormProtection\FormProtectionFactory::get()->generateToken('moduleCall', 'tools_txsolradminM1');
 		}
 		$currentPage = floor(($firstElementNumber + 1) / $iLimit) + 1;
 		// First

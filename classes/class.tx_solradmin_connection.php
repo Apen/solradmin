@@ -22,7 +22,6 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 class tx_solradmin_connection {
 	protected $solrConnection = NULL;
 	protected $scheme = '';
@@ -179,6 +178,9 @@ class tx_solradmin_connection {
 
 	public function setCurrentUrl($currentUrl) {
 		$currentUrl = str_replace('http\:', 'http\\\:', $currentUrl);
+		if (version_compare(TYPO3_version, '6.2.0', '>=')) {
+			$currentUrl .= '&moduleToken=' . \TYPO3\CMS\Core\FormProtection\FormProtectionFactory::get()->generateToken('moduleCall', 'tools_txsolradminM1');
+		}
 		$this->currentUrl = $currentUrl;
 	}
 
