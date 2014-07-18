@@ -137,7 +137,11 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 				}
 			}
 			$solrConnections = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
-			$selectSolr = '<select name="solrconnections" onchange="jumpToUrl(\'mod.php?&amp;id=0&amp;M=tools_txsolradminM1&amp;solrconnections=\'+this.options[this.selectedIndex].value,this);">';
+			if (version_compare(TYPO3_version, '6.2.0', '>=')) {
+				$token = '&moduleToken=' . \TYPO3\CMS\Core\FormProtection\FormProtectionFactory::get()->generateToken('moduleCall', 'tools_txsolradminM1');
+			}
+
+			$selectSolr = '<select name="solrconnections" onchange="jumpToUrl(\'mod.php?&amp;id=0' . $token . '&amp;M=tools_txsolradminM1&amp;solrconnections=\'+this.options[this.selectedIndex].value,this);">';
 			$index = 0;
 			foreach ($solrConnections as $solrConnection) {
 				if ($gpSolrConnections == $index) {

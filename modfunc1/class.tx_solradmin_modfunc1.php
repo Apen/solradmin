@@ -28,22 +28,23 @@
  */
 
 
-require_once(PATH_t3lib . 'class.t3lib_extobjbase.php');
+if (version_compare(TYPO3_version, '6.2.0', '<')) {
+	require_once(PATH_t3lib . 'class.t3lib_extobjbase.php');
+}
 require_once(PATH_site . 'typo3conf/ext/solradmin/classes/class.tx_solradmin_connection.php');
 
 /**
  * Module extension (addition to function menu) 'solradmin' for the 'solradmin' extension.
  *
- * @author	CERDAN Yohann <cerdanyohann@yahoo.fr>
- * @package	TYPO3
- * @subpackage	tx_solradmin
+ * @author        CERDAN Yohann <cerdanyohann@yahoo.fr>
+ * @package       TYPO3
+ * @subpackage    tx_solradmin
  */
-class tx_solradmin_modfunc1 extends t3lib_extobjbase
-{
+class tx_solradmin_modfunc1 extends t3lib_extobjbase {
 	/**
 	 * Main method of the module
 	 *
-	 * @return	HTML
+	 * @return    HTML
 	 */
 
 	function main() {
