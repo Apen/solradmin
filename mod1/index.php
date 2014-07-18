@@ -23,7 +23,9 @@
  ***************************************************************/
 
 $LANG->includeLLFile('EXT:solradmin/mod1/locallang.xml');
-require_once(PATH_t3lib . 'class.t3lib_scbase.php');
+if (version_compare(TYPO3_version, '6.2.0', '<')) {
+	require_once(PATH_t3lib . 'class.t3lib_scbase.php');
+}
 require_once(PATH_site . 'typo3conf/ext/solradmin/classes/class.tx_solradmin_connection.php');
 $BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the users has no permission for entry.
 
