@@ -28,9 +28,7 @@
  */
 
 
-if (version_compare(TYPO3_version, '6.2.0', '<')) {
-	require_once(PATH_t3lib . 'class.t3lib_extobjbase.php');
-}
+
 require_once(PATH_site . 'typo3conf/ext/solradmin/classes/class.tx_solradmin_connection.php');
 
 /**
@@ -40,7 +38,7 @@ require_once(PATH_site . 'typo3conf/ext/solradmin/classes/class.tx_solradmin_con
  * @package       TYPO3
  * @subpackage    tx_solradmin
  */
-class tx_solradmin_modfunc1 extends t3lib_extobjbase {
+class tx_solradmin_modfunc1 extends \TYPO3\CMS\Backend\Module\AbstractFunctionModule {
 	/**
 	 * Main method of the module
 	 *
@@ -49,8 +47,8 @@ class tx_solradmin_modfunc1 extends t3lib_extobjbase {
 
 	function main() {
 		global $LANG;
-		$LANG->includeLLFile('EXT:solradmin/mod1/locallang.xml');
-		$id = t3lib_div::_GP('id');
+		$GLOBALS['LANG']->includeLLFile('EXT:solradmin/mod1/locallang.xml');
+		$id = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('id');
 		$content = '';
 		$content .= '
 			<script language="javascript" type="text/javascript">
@@ -59,7 +57,7 @@ class tx_solradmin_modfunc1 extends t3lib_extobjbase {
 					document.location = URL;
 				}
 				function deleteRecord(url)	{	//
-					if (confirm(' . $LANG->JScharCode($LANG->getLL('areyousure')) . '))	{
+					if (confirm(' . $GLOBALS['LANG']->getLL('areyousure') . '))	{
 						jumpToUrl(url);
 					}
 					return false;
@@ -67,18 +65,18 @@ class tx_solradmin_modfunc1 extends t3lib_extobjbase {
 			</script>
 		';
 		if ($id > 0) {
-			$solrConnection = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getConnectionByPageId($id);
+			$solrConnection = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_ConnectionManager')->getConnectionByPageId($id);
 			$solrAdminConnection = new tx_solradmin_connection($solrConnection);
 			$solrAdminConnection->checkDelete();
-			$site = $solrAdminConnection->escape(t3lib_div::getIndpEnv('TYPO3_SITE_URL'));
-			$host = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
+			$site = $solrAdminConnection->escape(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL'));
+			$host = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY');
 			//$query = 'uid:' . intval($id) . ' AND (site:' . $site . ' OR site:' . $host . ')';
 			$query = ' (*:* uid:' . intval($id) . ' AND type:pages) OR (*:* pid:' . intval($id) . ' AND NOT type:pages)';
 			$offset = 0;
 			$limit = 100;
 			$params = array('qt' => 'standard');
-			$solrid = t3lib_div::_GP('solrid');
-			$solrAdminConnection->setCurrentUrl(t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'index.php?id=' . $id);
+			$solrid = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('solrid');
+			$solrAdminConnection->setCurrentUrl(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_DIR') . 'index.php?id=' . $id);
 			if (!empty($solrid)) {
 				$response = $solrAdminConnection->search('id:' . $solrAdminConnection->escape($solrid), 0, 1000, $params);
 				$content .= $solrAdminConnection->renderRecord($response);
@@ -87,7 +85,7 @@ class tx_solradmin_modfunc1 extends t3lib_extobjbase {
 				if (intval($response->response->numFound) === 0) {
 					$content .= $GLOBALS['LANG']->getLL('nodata');
 				} else {
-					$content .= $solrAdminConnection->renderRecords($response, array('id', 'title', 'indexed'));
+					$content .= $solrAdminConnection->renderRecords($response, array('id', 'site', 'title', 'indexed','url'));
 				}
 			}
 		} else {

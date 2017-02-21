@@ -2,7 +2,7 @@
 
 $tasks = array('sitecheck', 'post');
 $loadArray = array();
-$extensionPath = t3lib_extMgm::extPath('solradmin');
+$extensionPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('solradmin');
 
 foreach ($tasks as $task) {
 	$loadArray['tx_solradmin_' . $task] = $extensionPath . 'tasks/class.tx_solradmin_' . $task . '.php';

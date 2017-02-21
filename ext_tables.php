@@ -6,13 +6,14 @@ if (!defined('TYPO3_MODE')) {
 
 if (TYPO3_MODE == 'BE') {
 	// module
-	t3lib_extMgm::addModulePath('tools_txsolradminM1', t3lib_extMgm::extPath($_EXTKEY) . 'mod1/');
-	t3lib_extMgm::addModule('tools', 'txsolradminM1', '', t3lib_extMgm::extPath($_EXTKEY) . 'mod1/');
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModulePath('tools_txsolradminM1', \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'mod1/');
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModule('tools', 'txsolradminM1', '', \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'mod1/');
 	// module info
-	t3lib_extMgm::insertModuleFunction(
+	require_once(PATH_site.'typo3conf/ext/solradmin/modfunc1/class.tx_solradmin_modfunc1.php');
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::insertModuleFunction(
 		'web_info',
 		'tx_solradmin_modfunc1',
-		t3lib_extMgm::extPath($_EXTKEY) . 'modfunc1/class.tx_solradmin_modfunc1.php',
+		\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'modfunc1/class.tx_solradmin_modfunc1.php',
 		'Solr Admin'
 	);
 }

@@ -22,17 +22,17 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class tx_solradmin_post_fields implements tx_scheduler_AdditionalFieldProvider {
+class tx_solradmin_post_fields implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface {
 
 	/**
 	 * Generate the html code of the fields
 	 *
 	 * @param array               $taskInfo
 	 * @param object              $task
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return array
 	 */
-	public function getAdditionalFields(array &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		$additionalFields = array();
 		$additionalFields['post'] = $this->generateTextField('post', $taskInfo, $task, $parentObject);
 		return $additionalFields;
@@ -44,10 +44,10 @@ class tx_solradmin_post_fields implements tx_scheduler_AdditionalFieldProvider {
 	 * @param string              $fieldId
 	 * @param array               $taskInfo
 	 * @param object              $task
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return array
 	 */
-	public function generateInputField($fieldId, &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function generateInputField($fieldId, &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		if (empty($taskInfo['post_' . $fieldId])) {
 			if ($parentObject->CMD == 'edit') {
 				$taskInfo['post_' . $fieldId] = $task->$fieldId;
@@ -71,10 +71,10 @@ class tx_solradmin_post_fields implements tx_scheduler_AdditionalFieldProvider {
 	 * @param string              $fieldId
 	 * @param array               $taskInfo
 	 * @param object              $task
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return array
 	 */
-	public function generateTextField($fieldId, &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function generateTextField($fieldId, &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		if (empty($taskInfo['post_' . $fieldId])) {
 			if ($parentObject->CMD == 'edit') {
 				$taskInfo['post_' . $fieldId] = $task->$fieldId;
@@ -98,10 +98,10 @@ class tx_solradmin_post_fields implements tx_scheduler_AdditionalFieldProvider {
 	 * @param string              $fieldId
 	 * @param array               $taskInfo
 	 * @param object              $task
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return array
 	 */
-	public function generateCheckboxField($fieldId, &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function generateCheckboxField($fieldId, &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		if (empty($taskInfo['post_' . $fieldId])) {
 			if ($parentObject->CMD == 'edit') {
 				$taskInfo['post_' . $fieldId] = $task->$fieldId;
@@ -126,10 +126,10 @@ class tx_solradmin_post_fields implements tx_scheduler_AdditionalFieldProvider {
 	 * Validate the fields
 	 *
 	 * @param array               $submittedData
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return bool
 	 */
-	public function validateAdditionalFields(array &$submittedData, tx_scheduler_Module $parentObject) {
+	public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		$result = TRUE;
 
 		if (empty($submittedData['post_post']) === TRUE) {
@@ -146,9 +146,9 @@ class tx_solradmin_post_fields implements tx_scheduler_AdditionalFieldProvider {
 	 * Save date form the fields
 	 *
 	 * @param array             $submittedData
-	 * @param tx_scheduler_Task $task
+	 * @param \TYPO3\CMS\Scheduler\Task\AbstractTask $task
 	 */
-	public function saveAdditionalFields(array $submittedData, tx_scheduler_Task $task) {
+	public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task\AbstractTask $task) {
 		$task->post = $submittedData['post_post'];
 	}
 }

@@ -69,18 +69,15 @@ class tx_solradmin_connection {
 	}
 
 	public function renderRecords($response, array $fields) {
-		$content = '';
-		$content .= '<table cellspacing="1" cellpadding="2" border="0" class="tx_sv_reportlist typo3-dblist">';
-		$content .= '<tr class="t3-row-header"><td colspan="10">';
 		$numTotal = intval($response->response->numFound);
-		$content .= $GLOBALS['LANG']->getLL('results') . ' : ' . $numTotal . ' ' . $GLOBALS['LANG']->getLL('records');
-		$content .= '</td></tr>';
-		$content .= '<tr class="c-headLine">';
+		$content = '<p><br/>'.$GLOBALS['LANG']->getLL('results') . ' : ' . $numTotal . ' ' . $GLOBALS['LANG']->getLL('records').'</p>';
+		$content .= '<div class="table-fit"><table class="table table-striped table-hover typo3-extension-list">';
+		$content .= '<thead><tr>';
 		foreach ($fields as $field) {
-			$content .= '<td class="cell" align="center" valign="middle"><strong>' . strtoupper($field) . ':</strong></td>';
+			$content .= '<th>' . strtoupper($field) . ':</th>';
 		}
 		$content .= '<td class="cell" align="center">&nbsp;</td>';
-		$content .= '</tr>';
+		$content .= '</tr></thead><tbody>';
 		foreach ($response->response->docs as $doc) {
 			$content .= '<tr class="db_list_normal">';
 			foreach ($fields as $field) {
@@ -90,39 +87,35 @@ class tx_solradmin_connection {
 
 					switch ($field) {
 						case 'id':
-							$content .= '<td class="cell">' . $doc->$field . '';
-							$content .= '<a href="' . $this->currentUrl . '&solrid=' . $doc->$field . '">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL'
-								) . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+							$content .= '<td class="cell"><a href="' . $this->currentUrl . '&solrid=' . $doc->$field . '">'.$doc->$field.'</a></td>';
 							break;
 						case 'url':
-							$content .= '<td class="cell">' . $doc->$field . '';
-							$currentUrl = $doc->$field;
+							$content .= '<td class="cell">';
+							$currentUrl =$doc->$field;
 							if (strpos($currentUrl, 'http') === 0) {
-								$content .= '<a href="' . $currentUrl . '" target="_blank">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_SITE_URL'
-									) . 'typo3/sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+								$content .= '<a href="' . $currentUrl . '" target="_blank">' . \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($doc->$field,50) . '</a></td>';
 							} else {
 								if (!empty($doc->site) && !empty($doc->url)) {
 									if (strpos($currentUrl, 'http') === FALSE) {
 										$doc->site = 'http://' . $doc->site . '/';
 									}
-									$content .= '<a href="' . $doc->site . $currentUrl . '" target="_blank">&nbsp;&nbsp;<img src="' . t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR'
-										) . 'sysext/t3skin/icons/gfx/zoom.gif"/></a></td>';
+									$content .= '<a href="' . $doc->site . $currentUrl . '" target="_blank">' . \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($doc->$field,50) . '</a></td>';
 								} else {
 									$content .= '</td>';
 								}
 							}
 							break;
 						default:
-							$content .= '<td class="cell">' . $doc->$field . '</td>';
+							$content .= '<td class="cell">' . \TYPO3\CMS\Core\Utility\GeneralUtility::fixed_lgd_cs($doc->$field,50) . '</td>';
 							break;
 					}
 				}
 			}
-			$content .= '<td class="cell"><a onclick="deleteRecord(\'' . $this->currentUrl . '&delete=' . $doc->id . '\');"><img style="cursor:pointer;" src="' . t3lib_div::getIndpEnv('TYPO3_SITE_PATH'
-				) . 'typo3/sysext/t3skin/icons/gfx/garbage.gif"/></a></td>';
+			$content .= '<td class="cell"><a onclick="deleteRecord(\'' . $this->currentUrl . '&delete=' . $doc->id . '\');"><img style="cursor:pointer;" src="' . TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'
+				) . 'typo3/sysext/t3skin/images/icons/actions/edit-delete.png"/></a></td>';
 			$content .= '</tr>';
 		}
-		$content .= '</table>';
+		$content .= '</tbody></table></div>';
 		return $content;
 	}
 
@@ -144,7 +137,7 @@ class tx_solradmin_connection {
 	}
 
 	public function checkDelete() {
-		$delete = t3lib_div::_GP('delete');
+		$delete = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('delete');
 		if (!empty($delete)) {
 			$delete = $this->escape($delete);
 			$this->solrConnection->commit();
@@ -207,7 +200,7 @@ class tx_solradmin_connection {
 
 	/**
 	 * Returns HTML-code, which is a visual representation of a multidimensional array
-	 * use t3lib_div::print_array() in order to print an array
+	 * use TYPO3\CMS\Core\Utility\GeneralUtility::print_array() in order to print an array
 	 * Returns false if $array_in is not an array
 	 *
 	 * @param    mixed        Array to view

@@ -22,12 +22,13 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-$LANG->includeLLFile('EXT:solradmin/mod1/locallang.xml');
-if (version_compare(TYPO3_version, '6.2.0', '<')) {
-	require_once(PATH_t3lib . 'class.t3lib_scbase.php');
-}
+ if (!isset($MCONF)) {
+ 	require('conf.php');
+ }
+
+$GLOBALS['LANG']->includeLLFile('EXT:solradmin/mod1/locallang.xml');
 require_once(PATH_site . 'typo3conf/ext/solradmin/classes/class.tx_solradmin_connection.php');
-$BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the users has no permission for entry.
+$GLOBALS['BE_USER']->modAccess($MCONF, 1); // This checks permissions and exits if the users has no permission for entry.
 
 
 /**
@@ -37,7 +38,7 @@ $BE_USER->modAccess($MCONF, 1); // This checks permissions and exits if the user
  * @package       TYPO3
  * @subpackage    tx_solradmin
  */
-class  tx_solradmin_module1 extends t3lib_SCbase {
+class  tx_solradmin_module1 extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	protected $pageinfo;
 	protected $nbElementsPerPage = 15;
 	protected $beUserSessionDatas = NULL;
@@ -51,7 +52,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 	public function init() {
 		global $BE_USER, $LANG, $BACK_PATH, $TCA_DESCR, $TCA, $CLIENT, $TYPO3_CONF_VARS;
 		// Check nb per page
-		$nbPerPage = t3lib_div::_GP('nbPerPage');
+		$nbPerPage = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('nbPerPage');
 		if ($nbPerPage !== NULL) {
 			$this->nbElementsPerPage = $nbPerPage;
 		}
@@ -68,8 +69,8 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 		global $LANG;
 		$this->MOD_MENU = Array(
 			'function' => Array(
-				'2' => $LANG->getLL('function2'),
-				'3' => $LANG->getLL('function3'),
+				'2' => $GLOBALS['LANG']->getLL('function2'),
+				'3' => $GLOBALS['LANG']->getLL('function3'),
 			)
 		);
 		parent::menuConfig();
@@ -80,13 +81,13 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 
 		// Access check!
 		// The page will show only if there is a valid page and if this page may be viewed by the user
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
+		$this->pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->id, $this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
 
 		if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id)) {
 
 			// Draw the header.
-			$this->doc = t3lib_div::makeInstance('bigDoc');
+			$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Backend\Template\DocumentTemplate');
 			$this->doc->divClass = '';
 			$this->doc->bodyTagAdditions = ' style="height:95%;margin: 0px 10px;"';
 			$this->doc->backPath = $BACK_PATH;
@@ -100,7 +101,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 						document.location = URL;
 					}
 					function deleteRecord(url)	{	//
-						if (confirm(' . $LANG->JScharCode($LANG->getLL('areyousure')) . '))	{
+						if (confirm("' . $GLOBALS['LANG']->getLL('areyousure') . '"))	{
 							jumpToUrl(url);
 						}
 						return false;
@@ -115,15 +116,23 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 				</script>
 			';
 
+$this->doc->inDocStylesArray['solradminmod1'] = '
+table.typo3-dblist {
+	margin-top: 10px;
+	margin-bottom: 1.5em;
+	width: 100%;
+}
+';
+
 			$headerSection = '';
-			$this->content .= $this->doc->startPage($LANG->getLL('title'));
-			$this->content .= $this->doc->header($LANG->getLL('title'));
+			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
+			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
 			//$this->content .= $this->doc->spacer(5);
 
 			// multi core connections
 			$beUserSession = $GLOBALS['BE_USER']->fetchUserSession();
 			$this->beUserSessionDatas = unserialize($beUserSession['ses_data']);
-			$gpSolrConnections = t3lib_div::_GP('solrconnections');
+			$gpSolrConnections = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('solrconnections');
 			if ($gpSolrConnections !== NULL) {
 				$GLOBALS['BE_USER']->setAndSaveSessionData('indexsolrconnection', $gpSolrConnections);
 				$this->beUserSessionDatas['indexsolrconnection'] = $gpSolrConnections;
@@ -136,7 +145,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 					$this->beUserSessionDatas['indexsolrconnection'] = $gpSolrConnections;
 				}
 			}
-			$solrConnections = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
+			$solrConnections = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
 			if (version_compare(TYPO3_version, '6.2.0', '>=')) {
 				$token = '&moduleToken=' . \TYPO3\CMS\Core\FormProtection\FormProtectionFactory::get()->generateToken('moduleCall', 'tools_txsolradminM1');
 			}
@@ -155,17 +164,17 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 			$selectSolr .= '</select>';
 
 			$this->content .= $this->doc->section('', $this->doc->funcMenu($headerSection,
-			                                                               t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']
+			                                                               \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']
 			                                                               ) . $selectSolr
 			                                        )
 			);
 			$this->content .= $this->doc->divider(5);
 			$this->moduleContent();
 		} else {
-			$this->doc = t3lib_div::makeInstance('mediumDoc');
+			$this->doc = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('mediumDoc');
 			$this->doc->backPath = $BACK_PATH;
-			$this->content .= $this->doc->startPage($LANG->getLL('title'));
-			$this->content .= $this->doc->header($LANG->getLL('title'));
+			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
+			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
 			$this->content .= $this->doc->spacer(5);
 			$this->content .= $this->doc->spacer(10);
 		}
@@ -190,7 +199,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 	 */
 
 	public function moduleContent() {
-		$solrConnections = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
+		$solrConnections = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
 
 		// get the selected connection
 		$this->solrAdminConnection = new tx_solradmin_connection($solrConnections[$this->beUserSessionDatas['indexsolrconnection']]);
@@ -212,14 +221,14 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 		$this->solrAdminConnection->checkDelete();
 
 		// url params
-		$pointer = t3lib_div::_GP('pointer');
-		$query = t3lib_div::_GP('query');
-		$urlquery = t3lib_div::_GP('urlquery');
-		$solrfields = t3lib_div::_GP('solrfields');
+		$pointer = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pointer');
+		$query = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('query');
+		$urlquery = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('urlquery');
+		$solrfields = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('solrfields');
 		$offset = ($pointer !== NULL) ? intval($pointer) : 0;
 		$limit = $this->nbElementsPerPage;
-		$fields = ($solrfields !== NULL) ? $solrfields : array('id', 'site', 'title', 'indexed', 'url');
-		$baseActionURL = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
+		$fields = ($solrfields !== NULL) ? $solrfields : array('id', 'site', 'title', 'url');
+		$baseActionURL = TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		if (empty($query)) {
 			$query = '*:*';
 		}
@@ -231,7 +240,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 		$actionURL = $baseActionURL . '&query=' . urlencode($query) . '&nbPerPage=' . $limit;
 		$params = array('qt' => 'standard');
 
-		$solrfields = t3lib_div::_GP('solrfields');
+		$solrfields = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('solrfields');
 		if (!empty($solrfields)) {
 			$i = 0;
 			foreach ($solrfields as $solrfield) {
@@ -245,7 +254,7 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 
 		$this->solrAdminConnection->setCurrentUrl($actionURL);
 
-		$solrid = t3lib_div::_GP('solrid');
+		$solrid = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('solrid');
 
 		if (!empty($solrid)) {
 			// search
@@ -300,8 +309,8 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 	}
 
 	public function displayTypo3SolrAdmin() {
-		$solraction = t3lib_div::_GP('solraction');
-		$postdatas = t3lib_div::_GP('postdatas');
+		$solraction = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('solraction');
+		$postdatas = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('postdatas');
 
 		if (!empty($solraction)) {
 			switch ($solraction) {
@@ -349,11 +358,11 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 		$returnContent = '';
 		// Show page selector if not all records fit into one page
 		$first = $previous = $next = $last = $reload = '';
-		$query = t3lib_div::_GP('query');
-		$urlquery = t3lib_div::_GP('urlquery');
-		$solrfields = t3lib_div::_GP('solrfields');
-		$listURLOrig = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
-		$listURL = t3lib_div::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
+		$query = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('query');
+		$urlquery = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('urlquery');
+		$solrfields = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('solrfields');
+		$listURLOrig = TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
+		$listURL = TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_DIR') . 'mod.php?M=tools_txsolradminM1';
 		$listURL .= '&nbPerPage=' . $this->nbElementsPerPage;
 		if (empty($urlquery)) {
 			$urlquery = '';
@@ -376,30 +385,30 @@ class  tx_solradmin_module1 extends t3lib_SCbase {
 		// First
 		if ($currentPage > 1) {
 			$labelFirst = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:first');
-			$first = '<a href="' . $listURL . '&pointer=0"><img width="16" height="16" title="' . $labelFirst . '" alt="' . $labelFirst . '" src="sysext/t3skin/icons/gfx/control_first.gif"></a>';
+			$first = '<a href="' . $listURL . '&pointer=0"><img width="16" height="16" title="' . $labelFirst . '" alt="' . $labelFirst . '" src="'.TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/images/icons/actions/view-paging-first.png"></a>';
 		} else {
-			$first = '<img width="16" height="16" title="" alt="" src="sysext/t3skin/icons/gfx/control_first_disabled.gif">';
+			$first = '<img width="16" height="16" title="" alt="" src="'.TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/images/icons/actions/view-paging-first-disabled.png">';
 		}
 		// Previous
 		if (($currentPage - 1) > 0) {
 			$labelPrevious = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:previous');
-			$previous = '<a href="' . $listURL . '&pointer=' . (($currentPage - 2) * $iLimit) . '"><img width="16" height="16" title="' . $labelPrevious . '" alt="' . $labelPrevious . '" src="sysext/t3skin/icons/gfx/control_previous.gif"></a>';
+			$previous = '<a href="' . $listURL . '&pointer=' . (($currentPage - 2) * $iLimit) . '"><img width="16" height="16" title="' . $labelPrevious . '" alt="' . $labelPrevious . '" src="'.TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/images/icons/actions/view-paging-previous.png"></a>';
 		} else {
-			$previous = '<img width="16" height="16" title="" alt="" src="sysext/t3skin/icons/gfx/control_previous_disabled.gif">';
+			$previous = '<img width="16" height="16" title="" alt="" src="'.TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/images/icons/actions/view-paging-previous-disabled.png">';
 		}
 		// Next
 		if (($currentPage + 1) <= $totalPages) {
 			$labelNext = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:next');
-			$next = '<a href="' . $listURL . '&pointer=' . (($currentPage) * $iLimit) . '"><img width="16" height="16" title="' . $labelNext . '" alt="' . $labelNext . '" src="sysext/t3skin/icons/gfx/control_next.gif"></a>';
+			$next = '<a href="' . $listURL . '&pointer=' . (($currentPage) * $iLimit) . '"><img width="16" height="16" title="' . $labelNext . '" alt="' . $labelNext . '" src="'.TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/images/icons/actions/view-paging-next.png"></a>';
 		} else {
-			$next = '<img width="16" height="16" title="" alt="" src="sysext/t3skin/icons/gfx/control_next_disabled.gif">';
+			$next = '<img width="16" height="16" title="" alt="" src="'.TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/images/icons/actions/view-paging-next-disabled.png">';
 		}
 		// Last
 		if ($currentPage != $totalPages) {
 			$labelLast = $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:last');
-			$last = '<a href="' . $listURL . '&pointer=' . (($totalPages - 1) * $iLimit) . '"><img width="16" height="16" title="' . $labelLast . '" alt="' . $labelLast . '" src="sysext/t3skin/icons/gfx/control_last.gif"></a>';
+			$last = '<a href="' . $listURL . '&pointer=' . (($totalPages - 1) * $iLimit) . '"><img width="16" height="16" title="' . $labelLast . '" alt="' . $labelLast . '" src="'.TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/images/icons/actions/view-paging-last.png"></a>';
 		} else {
-			$last = '<img width="16" height="16" title="" alt="" src="sysext/t3skin/icons/gfx/control_last_disabled.gif">';
+			$last = '<img width="16" height="16" title="" alt="" src="'.TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'typo3/sysext/t3skin/images/icons/actions/view-paging-last-disabled.png">';
 		}
 
 		$pageNumberInput = '<span>' . $currentPage . '</span>';
@@ -439,11 +448,7 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/solradm
 
 
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tx_solradmin_module1');
+$SOBE = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solradmin_module1');
 $SOBE->init();
-
-// Include files?
-foreach ($SOBE->include_once as $INC_FILE) include_once($INC_FILE);
-
 $SOBE->main();
 $SOBE->printContent();

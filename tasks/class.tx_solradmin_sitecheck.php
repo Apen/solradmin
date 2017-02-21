@@ -23,7 +23,7 @@
  ***************************************************************/
 
 
-class tx_solradmin_sitecheck extends tx_scheduler_Task {
+class tx_solradmin_sitecheck extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
 	protected $urlDelete = array();
 
 	/**
@@ -35,7 +35,7 @@ class tx_solradmin_sitecheck extends tx_scheduler_Task {
 		require_once(PATH_site . 'typo3conf/ext/solradmin/classes/class.tx_solradmin_connection.php');
 		$site = $this->site;
 
-		$solrConnections = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
+		$solrConnections = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
 		$this->solrAdminConnection = new tx_solradmin_connection($solrConnections[0]);
 
 		$query = 'site:' . $this->solrAdminConnection->escapeUrlvalue($site) . '*';

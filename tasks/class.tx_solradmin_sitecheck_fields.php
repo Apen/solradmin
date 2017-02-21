@@ -22,7 +22,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class tx_solradmin_sitecheck_fields implements tx_scheduler_AdditionalFieldProvider
+class tx_solradmin_sitecheck_fields implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface
 {
 
 	/**
@@ -30,10 +30,10 @@ class tx_solradmin_sitecheck_fields implements tx_scheduler_AdditionalFieldProvi
 	 *
 	 * @param array               $taskInfo
 	 * @param object              $task
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return array
 	 */
-	public function getAdditionalFields(array &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		$additionalFields = array();
 		$additionalFields['site'] = $this->generateInputField('site', $taskInfo, $task, $parentObject);
 		$additionalFields['limit'] = $this->generateInputField('limit', $taskInfo, $task, $parentObject);
@@ -47,10 +47,10 @@ class tx_solradmin_sitecheck_fields implements tx_scheduler_AdditionalFieldProvi
 	 * @param string              $fieldId
 	 * @param array               $taskInfo
 	 * @param object              $task
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return array
 	 */
-	public function generateInputField($fieldId, &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function generateInputField($fieldId, &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		if (empty($taskInfo['sitecheck_' . $fieldId])) {
 			if ($parentObject->CMD == 'edit') {
 				$taskInfo['sitecheck_' . $fieldId] = $task->$fieldId;
@@ -74,10 +74,10 @@ class tx_solradmin_sitecheck_fields implements tx_scheduler_AdditionalFieldProvi
 	 * @param string              $fieldId
 	 * @param array               $taskInfo
 	 * @param object              $task
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return array
 	 */
-	public function generateTextField($fieldId, &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function generateTextField($fieldId, &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		if (empty($taskInfo['sitecheck_' . $fieldId])) {
 			if ($parentObject->CMD == 'edit') {
 				$taskInfo['sitecheck_' . $fieldId] = $task->$fieldId;
@@ -101,10 +101,10 @@ class tx_solradmin_sitecheck_fields implements tx_scheduler_AdditionalFieldProvi
 	 * @param string              $fieldId
 	 * @param array               $taskInfo
 	 * @param object              $task
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return array
 	 */
-	public function generateCheckboxField($fieldId, &$taskInfo, $task, tx_scheduler_Module $parentObject) {
+	public function generateCheckboxField($fieldId, &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		if (empty($taskInfo['sitecheck_' . $fieldId])) {
 			if ($parentObject->CMD == 'edit') {
 				$taskInfo['sitecheck_' . $fieldId] = $task->$fieldId;
@@ -129,10 +129,10 @@ class tx_solradmin_sitecheck_fields implements tx_scheduler_AdditionalFieldProvi
 	 * Validate the fields
 	 *
 	 * @param array               $submittedData
-	 * @param tx_scheduler_Module $parentObject
+	 * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject
 	 * @return bool
 	 */
-	public function validateAdditionalFields(array &$submittedData, tx_scheduler_Module $parentObject) {
+	public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController  $parentObject) {
 		$result = TRUE;
 
 		if (empty($submittedData['sitecheck_limit']) === TRUE) {
@@ -156,9 +156,9 @@ class tx_solradmin_sitecheck_fields implements tx_scheduler_AdditionalFieldProvi
 	 * Save date form the fields
 	 *
 	 * @param array             $submittedData
-	 * @param tx_scheduler_Task $task
+	 * @param \TYPO3\CMS\Scheduler\Task\AbstractTask $task
 	 */
-	public function saveAdditionalFields(array $submittedData, tx_scheduler_Task $task) {
+	public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task\AbstractTask $task) {
 		$task->limit = $submittedData['sitecheck_limit'];
 		$task->site = $submittedData['sitecheck_site'];
 		$task->delete = $submittedData['sitecheck_delete'];

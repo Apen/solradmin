@@ -23,7 +23,7 @@
  ***************************************************************/
 
 
-class tx_solradmin_post extends tx_scheduler_Task {
+class tx_solradmin_post extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
 
 	/**
 	 * Execute the task
@@ -32,7 +32,7 @@ class tx_solradmin_post extends tx_scheduler_Task {
 	 */
 	public function execute() {
 		require_once(PATH_site . 'typo3conf/ext/solradmin/classes/class.tx_solradmin_connection.php');
-		$solrConnections = t3lib_div::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
+		$solrConnections = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('tx_solr_ConnectionManager')->getAllConnections();
 		$this->solrAdminConnection = new tx_solradmin_connection($solrConnections[0]);
 
 		if (!empty($this->post)) {
