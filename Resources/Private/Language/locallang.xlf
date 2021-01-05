@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="messages" date="2020-02-06T11:48:25Z" product-name="solradmin">
+		<header/>
+		<body>
+			<trans-unit id="module.title" xml:space="preserve"><source>Solr Admin</source></trans-unit>
+			<trans-unit id="recordsfind" xml:space="preserve"><source>%s record(s) found for "%s" on solr server "%s"</source></trans-unit>
+			<trans-unit id="backtolist" xml:space="preserve"><source>Back to the list</source></trans-unit>
+			<trans-unit id="paginate_overall" xml:space="preserve"><source>Page %s on %s.</source></trans-unit>
+			<trans-unit id="paginate_first" xml:space="preserve"><source>First</source></trans-unit>
+			<trans-unit id="paginate_next" xml:space="preserve"><source>Next</source></trans-unit>
+			<trans-unit id="paginate_previous" xml:space="preserve"><source>Previous</source></trans-unit>
+			<trans-unit id="paginate_last" xml:space="preserve"><source>Last</source></trans-unit>
+			<trans-unit id="query" xml:space="preserve"><source>Solr query</source></trans-unit>
+		</body>
+	</file>
+</xliff>

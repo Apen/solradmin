@@ -1,0 +1,21 @@
+# Module configuration
+module.tx_solradmin {
+	settings {
+		itemsPerPage = 10
+		connections {
+			dev {
+				scheme = https
+				host = 127.0.0.1
+				port = 8983
+				path = /solr/core_fr/
+				fieldList = id,site,title,url
+			}
+		}
+	}
+
+	view {
+		templateRootPaths.10 = EXT:solradmin/Resources/Private/Backend/Templates/
+		partialRootPaths.10 = EXT:solradmin/Resources/Private/Backend/Partials/
+		layoutRootPaths.10 = EXT:solradmin/Resources/Private/Backend/Layouts/
+	}
+}

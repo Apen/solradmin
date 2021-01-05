@@ -1,0 +1,17 @@
+<f:layout name="Default"/>
+
+<f:section name="main">
+    <h1>
+        {doc.id}
+    </h1>
+
+    <a class="btn btn-primary" href="{f:uri.action(arguments:{currentPage:currentPage,overwriteDemand:overwriteDemand},action:'list')}" title="{page.number}">
+        <f:translate key="backtolist"/>
+    </a>
+
+    <f:for each="{doc}" as="value" key="field">
+        <h2>{field}</h2>
+        <p>{value}</p>
+    </f:for>
+
+</f:section>

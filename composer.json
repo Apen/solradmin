@@ -1,0 +1,42 @@
+{
+  "name": "apen/solradmin",
+  "description": "TYPO3 extension to manage Apache Solr cores",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": "^7.2",
+    "typo3/cms-core": "^9.5.17 || ^10.4"
+  },
+  "scripts": {
+    "php:ecs": ".Build/bin/ecs check . --config ./Build/ecs.php --fix --ansi",
+    "php:ecsdry": ".Build/bin/ecs check . --config ./Build/ecs.php --ansi",
+    "php:fix": ".Build/bin/php-cs-fixer --config=./Build/.php_cs fix .",
+    "php:lint": "find . -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l",
+    "php:phpstan": ".Build/bin/phpstan analyse . -c  ./Build/phpstan.neon --ansi",
+    "php:rector": ".Build/bin/rector process . -c  ./Build/rector.php --ansi",
+    "php:rectordry": ".Build/bin/rector process . -c  ./Build/rector.php --dry-run --ansi"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^2",
+    "saschaegerer/phpstan-typo3": "^0.13",
+    "typo3/testing-framework": "^6",
+    "rector/rector": "^0.8",
+    "ssch/typo3-rector": "^0.5",
+    "nikic/php-parser": "^4.10",
+    "helmich/typo3-typoscript-lint": "2.3.0",
+    "symplify/easy-coding-standard": "^8.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Sng\\Solradmin\\": "Classes"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "web-dir": ".Build/Web"
+    }
+  },
+  "config": {
+    "vendor-dir": ".Build/vendor",
+    "bin-dir": ".Build/bin"
+  }
+}
