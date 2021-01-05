@@ -75,7 +75,20 @@ class AdminController extends ActionController
      */
     public function deleteAction(string $id, array $overwriteDemand = null, int $currentPage = 1): void
     {
-
+        $demand = $this->createDemandObjectFromSettingsAndArguments();
+        $demand = $this->overwriteDemandObject($demand, $overwriteDemand);
+        if (!empty($id)) {
+            $this->adminRepository->remove($demand, $id);
+        }
+        $this->redirect(
+            'list',
+            'Admin',
+            'solradmin',
+            [
+                'overwriteDemand' => $overwriteDemand,
+                'currentPage' => $currentPage
+            ]
+        );
     }
 
     /**

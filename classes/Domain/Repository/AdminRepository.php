@@ -10,9 +10,33 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class AdminRepository
 {
+    /**
+     * @param \Sng\Solradmin\Domain\Model\Dto\SolrDemand $demand
+     * @return object|null
+     */
     public function findAll(SolrDemand $demand): ?object
     {
         return $this->getUrl($this->buildSelectUrl($demand));
+    }
+
+    /**
+     * @param \Sng\Solradmin\Domain\Model\Dto\SolrDemand $demand
+     * @param string                                     $id
+     */
+    public function remove(SolrDemand $demand, string $id)
+    {
+        $url = $this->buildBaseUrl($demand) . 'update';
+        $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
+        $additionalOptions = [
+            'headers' => [
+                'Cache-Control' => 'no-cache',
+                'Content-type' => 'text/xml'
+            ],
+            'body' => '<delete><query>id:' . $id . '</query></delete>'
+        ];
+        $response = $requestFactory->request($url, 'POST', $additionalOptions);
+        $additionalOptions['body'] = '<commit />';
+        $response = $requestFactory->request($url, 'POST', $additionalOptions);
     }
 
     /**
