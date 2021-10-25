@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sng\Solradmin\Domain\Repository;
 
+use function GuzzleHttp\json_decode;
 use Sng\Solradmin\Domain\Model\Dto\SolrDemand;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -23,7 +24,7 @@ class AdminRepository
      * @param \Sng\Solradmin\Domain\Model\Dto\SolrDemand $demand
      * @param string                                     $id
      */
-    public function remove(SolrDemand $demand, string $id)
+    public function remove(SolrDemand $demand, string $id): void
     {
         $url = $this->buildBaseUrl($demand) . 'update';
         $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
@@ -71,8 +72,9 @@ class AdminRepository
         $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
         $response = $requestFactory->request($url);
         if ($response->getStatusCode() === 200) {
-            return \GuzzleHttp\json_decode($response->getBody()->getContents());
+            return json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
         }
+
         return null;
     }
 }

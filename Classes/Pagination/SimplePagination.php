@@ -6,25 +6,13 @@ namespace Sng\Solradmin\Pagination;
 
 class SimplePagination
 {
-    /**
-     * @var int
-     */
-    protected $nbItems = 0;
+    protected int $nbItems = 0;
 
-    /**
-     * @var int
-     */
-    protected $currentPage = 1;
+    protected int $currentPage = 1;
 
-    /**
-     * @var int
-     */
-    protected $numberOfPages = 0;
+    protected int $numberOfPages = 0;
 
-    /**
-     * @var int
-     */
-    protected $maximumNumberOfLinks = 99;
+    protected int $maximumNumberOfLinks = 99;
 
     /**
      * @var int|float
@@ -74,9 +62,10 @@ class SimplePagination
     {
         $this->calculateDisplayRange();
         $pages = [];
-        for ($i = $this->displayRangeStart; $i <= $this->displayRangeEnd; $i++) {
+        for ($i = $this->displayRangeStart; $i <= $this->displayRangeEnd; ++$i) {
             $pages[] = ['number' => $i, 'isCurrent' => $i === $this->currentPage];
         }
+
         $this->pages = $pages;
     }
 
@@ -100,15 +89,18 @@ class SimplePagination
         if ($maximumNumberOfLinks > $this->numberOfPages) {
             $maximumNumberOfLinks = $this->numberOfPages;
         }
+
         $delta = floor($maximumNumberOfLinks / 2);
         $this->displayRangeStart = $this->currentPage - $delta;
         $this->displayRangeEnd = $this->currentPage + $delta - ($maximumNumberOfLinks % 2 === 0 ? 1 : 0);
         if ($this->displayRangeStart < 1) {
             $this->displayRangeEnd -= $this->displayRangeStart - 1;
         }
+
         if ($this->displayRangeEnd > $this->numberOfPages) {
             $this->displayRangeStart -= $this->displayRangeEnd - $this->numberOfPages;
         }
+
         $this->displayRangeStart = (int)max($this->displayRangeStart, 1);
         $this->displayRangeEnd = (int)min($this->displayRangeEnd, $this->numberOfPages);
     }
@@ -152,5 +144,4 @@ class SimplePagination
     {
         return $this->currentPage;
     }
-
 }

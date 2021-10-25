@@ -16,6 +16,7 @@ class AdminService
         foreach ($settings as $connectionName => $connection) {
             $select[$connectionName] = $connection['scheme'] . '://' . $connection['host'] . ':' . $connection['port'] . $connection['path'];
         }
+
         return $select;
     }
 }

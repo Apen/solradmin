@@ -8,45 +8,21 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class SolrDemand extends AbstractEntity
 {
-    /**
-     * @var string
-     */
-    protected $scheme = '';
+    protected string $scheme = '';
 
-    /**
-     * @var string
-     */
-    protected $host = '';
+    protected string $host = '';
 
-    /**
-     * @var string
-     */
-    protected $port = '';
+    protected string $port = '';
 
-    /**
-     * @var string
-     */
-    protected $path = '';
+    protected string $path = '';
 
-    /**
-     * @var int
-     */
-    protected $limit = 10;
+    protected int $limit = 10;
 
-    /**
-     * @var int
-     */
-    protected $start = 0;
+    protected int $start = 0;
 
-    /**
-     * @var string
-     */
-    protected $fieldList = '';
+    protected string $fieldList = '';
 
-    /**
-     * @var string
-     */
-    protected $query = '*:*';
+    protected string $query = '*:*';
 
     /**
      * @return string

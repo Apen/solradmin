@@ -3,7 +3,7 @@
   "description": "TYPO3 extension to manage Apache Solr cores",
   "license": "GPL-2.0-or-later",
   "require": {
-    "php": "^7.2",
+    "php": "^7.4",
     "typo3/cms-core": "^9.5.17 || ^10.4"
   },
   "scripts": {
@@ -16,14 +16,12 @@
     "php:rectordry": ".Build/bin/rector process . -c  ./Build/rector.php --dry-run --ansi"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^2",
     "saschaegerer/phpstan-typo3": "^0.13",
     "typo3/testing-framework": "^6",
-    "rector/rector": "^0.8",
-    "ssch/typo3-rector": "^0.5",
+    "rector/rector": "^0.11",
     "nikic/php-parser": "^4.10",
     "helmich/typo3-typoscript-lint": "2.3.0",
-    "symplify/easy-coding-standard": "^8.3"
+    "symplify/easy-coding-standard": "^9.4"
   },
   "autoload": {
     "psr-4": {

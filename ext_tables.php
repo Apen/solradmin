@@ -1,14 +1,14 @@
 <?php
 
-defined('TYPO3_MODE') or die();
+defined('TYPO3_MODE') || die();
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-    'Sng.Solradmin',
+    'Solradmin',
     'system',
     'solradmin',
     '',
     [
-        'Admin' => 'list,detail,delete'
+        \Sng\Solradmin\Controller\AdminController::class => 'list,detail,delete'
     ],
     [
         'access' => 'user,group',

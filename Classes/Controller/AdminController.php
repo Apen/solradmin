@@ -7,22 +7,16 @@ namespace Sng\Solradmin\Controller;
 use Sng\Solradmin\Domain\Model\Dto\SolrDemand;
 use Sng\Solradmin\Domain\Repository\AdminRepository;
 use Sng\Solradmin\Pagination\SimplePagination;
+use Sng\Solradmin\Service\AdminService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
-use Sng\Solradmin\Service\AdminService;
 
 class AdminController extends ActionController
 {
-    /**
-     * @var \Sng\Solradmin\Domain\Repository\AdminRepository
-     */
-    protected $adminRepository;
+    protected ?AdminRepository $adminRepository = null;
 
-    /**
-     * @var \Sng\Solradmin\Service\AdminService
-     */
-    protected $adminService;
+    protected ?AdminService $adminService = null;
 
     /**
      * Output a list view of records
@@ -30,7 +24,7 @@ class AdminController extends ActionController
      * @param array $overwriteDemand
      * @param int   $currentPage
      */
-    public function listAction(array $overwriteDemand = null, int $currentPage = 1): void
+    public function listAction(?array $overwriteDemand = null, int $currentPage = 1): void
     {
         $demand = $this->createDemandObjectFromSettingsAndArguments();
         $demand = $this->overwriteDemandObject($demand, $overwriteDemand);
@@ -52,7 +46,7 @@ class AdminController extends ActionController
      * @param array  $overwriteDemand
      * @param int    $currentPage
      */
-    public function detailAction(string $id, array $overwriteDemand = null, int $currentPage = 1): void
+    public function detailAction(string $id, ?array $overwriteDemand = null, int $currentPage = 1): void
     {
         $demand = $this->createDemandObjectFromSettingsAndArguments();
         $demand->setQuery('id:' . $id);
@@ -73,13 +67,14 @@ class AdminController extends ActionController
      * @param array  $overwriteDemand
      * @param int    $currentPage
      */
-    public function deleteAction(string $id, array $overwriteDemand = null, int $currentPage = 1): void
+    public function deleteAction(string $id, ?array $overwriteDemand = null, int $currentPage = 1): void
     {
         $demand = $this->createDemandObjectFromSettingsAndArguments();
         $demand = $this->overwriteDemandObject($demand, $overwriteDemand);
         if (!empty($id)) {
             $this->adminRepository->remove($demand, $id);
         }
+
         $this->redirect(
             'list',
             'Admin',
@@ -186,9 +181,11 @@ class AdminController extends ActionController
                 }
             }
         }
+
         if (!empty($overwriteDemand['connection'])) {
             $demand = $this->buildConnectionDemand($demand, $this->settings['connections'][$overwriteDemand['connection']]);
         }
+
         return $demand;
     }
 
