@@ -4,7 +4,7 @@
   "license": "GPL-2.0-or-later",
   "require": {
     "php": "^7.4",
-    "typo3/cms-core": "^9.5.17 || ^10.4"
+    "typo3/cms-core": "^10.4 || ^11.5"
   },
   "scripts": {
     "php:ecs": ".Build/bin/ecs check . --config ./Build/ecs.php --fix --ansi",
