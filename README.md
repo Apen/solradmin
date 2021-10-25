@@ -9,7 +9,7 @@
 
 ## What does it do?
 
-With this module you can directly access your solr module, search records with an interface, delete some specifics records and do other operations (with multi core support)
+With this module you can directly access your solr module, search records with an interface, delete some specifics records.
 
 Do not hesitate to contact me if you have any good ideas.
 
