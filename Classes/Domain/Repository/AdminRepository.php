@@ -72,7 +72,7 @@ class AdminRepository
         $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
         $response = $requestFactory->request($url);
         if ($response->getStatusCode() === 200) {
-            return json_decode($response->getBody()->getContents(), null, 512, JSON_THROW_ON_ERROR);
+            return \GuzzleHttp\json_decode($response->getBody()->getContents());
         }
 
         return null;
