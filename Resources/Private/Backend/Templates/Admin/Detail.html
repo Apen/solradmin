@@ -1,3 +1,5 @@
+{namespace solradmin=Sng\Solradmin\ViewHelpers}
+
 <f:layout name="Default"/>
 
 <f:section name="main">
@@ -11,7 +13,7 @@
 
     <f:for each="{doc}" as="value" key="field">
         <h2>{field}</h2>
-        <p>{value}</p>
+        <p><solradmin:formatValue value="{value}"/></p>
     </f:for>
 
 </f:section>
