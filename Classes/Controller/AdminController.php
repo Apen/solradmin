@@ -21,8 +21,8 @@ class AdminController extends ActionController
     /**
      * Output a list view of records
      *
-     * @param array $overwriteDemand
-     * @param int   $currentPage
+     * @param array|null $overwriteDemand
+     * @param int        $currentPage
      */
     public function listAction(?array $overwriteDemand = null, int $currentPage = 1): void
     {
@@ -42,13 +42,14 @@ class AdminController extends ActionController
     /**
      * Output a list view of records
      *
-     * @param string $id
-     * @param array  $overwriteDemand
-     * @param int    $currentPage
+     * @param string     $id
+     * @param array|null $overwriteDemand
+     * @param int        $currentPage
      */
     public function detailAction(string $id, ?array $overwriteDemand = null, int $currentPage = 1): void
     {
         $demand = $this->createDemandObjectFromSettingsAndArguments();
+        $demand = $this->overwriteDemandObject($demand, $overwriteDemand);
         $demand->setQuery('id:' . $id);
         $demand->setFieldList('*');
         $demand->setStart(0);
@@ -63,9 +64,10 @@ class AdminController extends ActionController
     /**
      * Output a list view of records
      *
-     * @param string $id
-     * @param array  $overwriteDemand
-     * @param int    $currentPage
+     * @param string     $id
+     * @param array|null $overwriteDemand
+     * @param int        $currentPage
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
     public function deleteAction(string $id, ?array $overwriteDemand = null, int $currentPage = 1): void
     {
@@ -131,7 +133,7 @@ class AdminController extends ActionController
      * @param array                                      $connection
      * @return \Sng\Solradmin\Domain\Model\Dto\SolrDemand
      */
-    protected function buildConnectionDemand(SolrDemand $demand, $connection = []): SolrDemand
+    protected function buildConnectionDemand(SolrDemand $demand, array $connection = []): SolrDemand
     {
         if (empty($connection)) {
             // get the first connection by default
