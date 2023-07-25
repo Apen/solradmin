@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Sng\Solradmin\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use Sng\Solradmin\Domain\Model\Dto\SolrDemand;
 use Sng\Solradmin\Domain\Repository\AdminRepository;
 use Sng\Solradmin\Pagination\SimplePagination;
 use Sng\Solradmin\Service\AdminService;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 
 class AdminController extends ActionController
 {
@@ -18,14 +19,31 @@ class AdminController extends ActionController
 
     protected ?AdminService $adminService = null;
 
+    protected ModuleTemplateFactory $moduleTemplateFactory;
+
+    public function __construct(ModuleTemplateFactory $moduleTemplateFactory)
+    {
+        $this->moduleTemplateFactory = $moduleTemplateFactory;
+    }
+
+    public function initializeAction(): void
+    {
+        if ($this->arguments->hasArgument('overwriteDemand')) {
+            $propertyMappingConfiguration = $this->arguments->getArgument('overwriteDemand')->getPropertyMappingConfiguration();
+            $propertyMappingConfiguration->allowProperties('query');
+            $propertyMappingConfiguration->allowProperties('connection');
+        }
+    }
+
     /**
      * Output a list view of records
      *
-     * @param array|null $overwriteDemand
-     * @param int        $currentPage
+     * @param SolrDemand|null $overwriteDemand
+     * @param int             $currentPage
      */
-    public function listAction(?array $overwriteDemand = null, int $currentPage = 1): void
+    public function listAction(?SolrDemand $overwriteDemand = null, int $currentPage = 1): ResponseInterface
     {
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $demand = $this->createDemandObjectFromSettingsAndArguments();
         $demand = $this->overwriteDemandObject($demand, $overwriteDemand);
         $solrReponse = $this->adminRepository->findAll($demand);
@@ -33,23 +51,27 @@ class AdminController extends ActionController
         $this->view->assign('currentPage', $currentPage);
         $this->view->assign('demand', $demand);
         $this->view->assign('overwriteDemand', $overwriteDemand);
+        $this->view->assign('overwriteDemandArray', $overwriteDemand !== null ? $overwriteDemand->toArray() : []);
         $this->view->assign('response', $solrReponse->response);
         $this->view->assign('query', $solrReponse->responseHeader);
         $this->view->assign('solrurl', $this->adminRepository->buildBaseUrl($demand));
         $this->view->assign('connections', $this->adminService->buildConnectionsSelect($this->settings['connections']));
+        $moduleTemplate->setContent($this->view->render());
+        $moduleTemplate->getDocHeaderComponent()->disable();
+        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 
     /**
      * Output a list view of records
      *
-     * @param string     $id
-     * @param array|null $overwriteDemand
-     * @param int        $currentPage
+     * @param string $id
+     * @param array  $overwriteDemand
+     * @param int    $currentPage
      */
-    public function detailAction(string $id, ?array $overwriteDemand = null, int $currentPage = 1): void
+    public function detailAction(string $id, array $overwriteDemand = [], int $currentPage = 1): ResponseInterface
     {
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $demand = $this->createDemandObjectFromSettingsAndArguments();
-        $demand = $this->overwriteDemandObject($demand, $overwriteDemand);
         $demand->setQuery('id:' . $id);
         $demand->setFieldList('*');
         $demand->setStart(0);
@@ -59,6 +81,9 @@ class AdminController extends ActionController
         $this->view->assign('overwriteDemand', $overwriteDemand);
         $this->view->assign('doc', get_object_vars($solrReponse->response->docs[0]));
         $this->view->assign('query', $solrReponse->responseHeader);
+        $moduleTemplate->setContent($this->view->render());
+        $moduleTemplate->getDocHeaderComponent()->disable();
+        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 
     /**
@@ -67,9 +92,8 @@ class AdminController extends ActionController
      * @param string     $id
      * @param array|null $overwriteDemand
      * @param int        $currentPage
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
-    public function deleteAction(string $id, ?array $overwriteDemand = null, int $currentPage = 1): void
+    public function deleteAction(string $id, ?array $overwriteDemand = null, int $currentPage = 1): ResponseInterface
     {
         $demand = $this->createDemandObjectFromSettingsAndArguments();
         $demand = $this->overwriteDemandObject($demand, $overwriteDemand);
@@ -77,13 +101,13 @@ class AdminController extends ActionController
             $this->adminRepository->remove($demand, $id);
         }
 
-        $this->redirect(
+        return $this->redirect(
             'list',
             'Admin',
             'solradmin',
             [
                 'overwriteDemand' => $overwriteDemand,
-                'currentPage' => $currentPage
+                'currentPage' => $currentPage,
             ]
         );
     }
@@ -123,6 +147,16 @@ class AdminController extends ActionController
 
         if ($this->request->hasArgument('currentPage')) {
             $demand->setStart(((int)$this->request->getArgument('currentPage') - 1) * (int)$this->settings['itemsPerPage']);
+        }
+
+        if ($this->request->hasArgument('overwriteDemand')) {
+            $overwriteDemand = $this->request->getArgument('overwriteDemand');
+            if ($overwriteDemand['query'] !== '') {
+                $demand->setQuery($overwriteDemand['query']);
+            }
+            if ($overwriteDemand['connection'] !== '') {
+                $demand = $this->buildConnectionDemand($demand, $this->settings['connections'][$overwriteDemand['connection']]);
+            }
         }
 
         return $demand;
@@ -167,25 +201,22 @@ class AdminController extends ActionController
      * Overwrites a given demand object by an propertyName =>  $propertyValue array
      *
      * @param \Sng\Solradmin\Domain\Model\Dto\SolrDemand $demand          Demand
-     * @param array|null                                 $overwriteDemand OwerwriteDemand
+     * @param SolrDemand|null                            $overwriteDemand OwerwriteDemand
      *
      * @return \Sng\Solradmin\Domain\Model\Dto\SolrDemand
      */
-    protected function overwriteDemandObject(SolrDemand $demand, ?array $overwriteDemand = null): SolrDemand
+    protected function overwriteDemandObject(SolrDemand $demand, ?SolrDemand $overwriteDemand = null): SolrDemand
     {
-        if (
-            (empty($this->settings['disableOverrideDemand']) && $overwriteDemand !== null) ||
-            (!empty($this->settings['disableOverrideDemand']) && (int)$this->settings['disableOverrideDemand'] !== 1 && $overwriteDemand !== null)
-        ) {
-            foreach ($overwriteDemand as $propertyName => $propertyValue) {
-                if ($propertyValue !== '' || $this->settings['allowEmptyStringsForOverwriteDemand']) {
-                    ObjectAccess::setProperty($demand, $propertyName, $propertyValue);
-                }
+        if ($overwriteDemand !== null) {
+            if ($overwriteDemand->getQuery() !== '*:*') {
+                $demand->setQuery($overwriteDemand->getQuery());
             }
-        }
-
-        if (!empty($overwriteDemand['connection'])) {
-            $demand = $this->buildConnectionDemand($demand, $this->settings['connections'][$overwriteDemand['connection']]);
+            if ($overwriteDemand->getConnection() !== '') {
+                $demand = $this->buildConnectionDemand(
+                    $demand,
+                    $this->settings['connections'][$overwriteDemand->getConnection()]
+                );
+            }
         }
 
         return $demand;

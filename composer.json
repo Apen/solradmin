@@ -1,10 +1,21 @@
 {
   "name": "apen/solradmin",
   "description": "TYPO3 extension to manage Apache Solr cores",
-  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "TYPO3"
+  ],
+  "authors": [
+    {
+      "name": "Yohann Cerdan",
+      "email": "yohann@site-ngo.fr",
+      "role": "Developer",
+      "homepage": "https://www.site-ngo.fr"
+    }
+  ],
+  "license": "GPL-2.0+",
   "require": {
-    "php": "^7.4",
-    "typo3/cms-core": "^10.4 || ^11.5"
+    "php": ">=7.4",
+    "typo3/cms-core": "^11||^12"
   },
   "scripts": {
     "php:ecs": ".Build/bin/ecs check . --config ./Build/ecs.php --fix --ansi",
@@ -16,12 +27,13 @@
     "php:rectordry": ".Build/bin/rector process . -c  ./Build/rector.php --dry-run --ansi"
   },
   "require-dev": {
-    "saschaegerer/phpstan-typo3": "^0.13",
-    "typo3/testing-framework": "^6",
-    "rector/rector": "^0.11",
-    "nikic/php-parser": "^4.10",
-    "helmich/typo3-typoscript-lint": "2.3.0",
-    "symplify/easy-coding-standard": "^9.4"
+    "friendsofphp/php-cs-fixer": "^3",
+    "saschaegerer/phpstan-typo3": "^1",
+    "typo3/testing-framework": "dev-main",
+    "ssch/typo3-rector": "^1",
+    "nikic/php-parser": "^4",
+    "helmich/typo3-typoscript-lint": "^3",
+    "symplify/easy-coding-standard": "^11"
   },
   "autoload": {
     "psr-4": {
@@ -30,12 +42,19 @@
   },
   "extra": {
     "typo3/cms": {
-      "web-dir": ".Build/Web",
+      "app-dir": ".Build",
+      "web-dir": ".Build/public",
       "extension-key": "solradmin"
     }
   },
   "config": {
     "vendor-dir": ".Build/vendor",
-    "bin-dir": ".Build/bin"
+    "bin-dir": ".Build/bin",
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "composer/package-versions-deprecated": true
+    }
   }
 }

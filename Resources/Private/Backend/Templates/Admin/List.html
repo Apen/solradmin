@@ -10,8 +10,9 @@
     <f:form method="post"
             enctype="multipart/form-data"
             object="{overwriteDemand}"
+            objectName="overwriteDemand"
             class="form-inline"
-            style="display:flex">
+            style="display:flex;margin-bottom:10px;">
 
             <f:form.textfield
                     id="search-keywords"
@@ -20,7 +21,13 @@
                     name="overwriteDemand[query]"
                     value="{query.params.q}"
             />
-            <f:form.select class="form-control" style="margin:0 5px;" name="overwriteDemand[connection]" options="{connections}" value="{overwriteDemand.connection}" />
+            <f:form.select
+                    class="form-control"
+                    style="margin:0 5px;"
+                    name="overwriteDemand[connection]"
+                    options="{connections}"
+                    value="{overwriteDemand.connection}"
+            />
             <f:form.submit value="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:search')}" class="btn btn-primary"/>
     </f:form>
 
@@ -47,11 +54,11 @@
                             </f:for>
                             <td>
                                 <div class="btn-group">
-                                    <f:link.action class="btn btn-default" action="detail" arguments="{id:doc.id,currentPage:currentPage,overwriteDemand:overwriteDemand}">
+                                    <f:link.action class="btn btn-default" action="detail" arguments="{id:doc.id,currentPage:currentPage,overwriteDemand:overwriteDemandArray}">
                                         <core:icon identifier="actions-view-page" size="small"/>
                                     </f:link.action>
                                     <a class="btn btn-default t3js-modal-trigger"
-                                       href="{f:uri.action(action:'delete',arguments:{id:doc.id,currentPage:currentPage,overwriteDemand:overwriteDemand})}"
+                                       href="{f:uri.action(action:'delete',arguments:{id:doc.id,currentPage:currentPage,overwriteDemand:overwriteDemandArray})}"
                                        title="{f:translate(key: 'LLL:EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf:delete')}"
                                        data-severity="warning"
                                        data-title="{f:translate(key: 'LLL:EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf:label.confirm.delete_record.title')}"

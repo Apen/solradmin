@@ -3,12 +3,12 @@
         <f:if condition="{pagination.previousPageNumber} && {pagination.previousPageNumber} >= {pagination.firstPageNumber}">
             <f:then>
                 <li class="page-item">
-                    <a class="page-link" href="{f:uri.action(arguments:{currentPage: 1,overwriteDemand:overwriteDemand})}" title="{f:translate(key:'paginate_first')}">
+                    <a class="page-link" href="{f:uri.action(arguments:{currentPage: 1,overwriteDemand:overwriteDemandArray})}" title="{f:translate(key:'paginate_first')}">
                         {f:translate(key:'paginate_first')}
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="{f:uri.action(arguments:{currentPage: pagination.previousPageNumber,overwriteDemand:overwriteDemand})}" title="{f:translate(key:'paginate_previous')}">
+                    <a class="page-link" href="{f:uri.action(arguments:{currentPage: pagination.previousPageNumber,overwriteDemand:overwriteDemandArray})}" title="{f:translate(key:'paginate_previous')}">
                         {f:translate(key:'paginate_previous')}
                     </a>
                 </li>
@@ -32,7 +32,7 @@
                 </f:then>
                 <f:else>
                     <li class="page-item">
-                        <a class="page-link" href="{f:uri.action(arguments:{currentPage: page.number,overwriteDemand:overwriteDemand})}" title="{page.number}">
+                        <a class="page-link" href="{f:uri.action(arguments:{currentPage: page.number,overwriteDemand:overwriteDemandArray})}" title="{page.number}">
                             {page.number}
                         </a>
                     </li>
@@ -45,12 +45,12 @@
         <f:if condition="{pagination.nextPageNumber} && {pagination.nextPageNumber} <= {pagination.lastPageNumber}">
             <f:then>
                 <li class="page-item">
-                    <a class="page-link" href="{f:uri.action(arguments:{currentPage: pagination.nextPageNumber,overwriteDemand:overwriteDemand})}" title="{f:translate(key:'paginate_next')}">
+                    <a class="page-link" href="{f:uri.action(arguments:{currentPage: pagination.nextPageNumber,overwriteDemand:overwriteDemandArray})}" title="{f:translate(key:'paginate_next')}">
                         {f:translate(key:'paginate_next')}
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="{f:uri.action(arguments:{currentPage: pagination.lastPageNumber,overwriteDemand:overwriteDemand})}" title="{f:translate(key:'paginate_last')}">
+                    <a class="page-link" href="{f:uri.action(arguments:{currentPage: pagination.lastPageNumber,overwriteDemand:overwriteDemandArray})}" title="{f:translate(key:'paginate_last')}">
                         {f:translate(key:'paginate_last')}
                     </a>
                 </li>

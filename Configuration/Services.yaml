@@ -1,0 +1,11 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Sng\Solradmin\:
+    resource: '../Classes/*'
+
+  Sng\Solradmin\Controller\AdminController:
+    tags: [ 'backend.controller' ]

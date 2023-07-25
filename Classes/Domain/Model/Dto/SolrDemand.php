@@ -6,7 +6,7 @@ namespace Sng\Solradmin\Domain\Model\Dto;
 
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-class SolrDemand extends AbstractEntity
+class SolrDemand
 {
     protected string $scheme = '';
 
@@ -16,13 +16,14 @@ class SolrDemand extends AbstractEntity
 
     protected string $path = '';
 
-    protected int $limit = 10;
+    protected int $limit = 0;
 
     protected int $start = 0;
 
     protected string $fieldList = '';
 
     protected string $query = '*:*';
+    protected string $connection = '';
 
     /**
      * @return string
@@ -159,4 +160,34 @@ class SolrDemand extends AbstractEntity
     {
         $this->query = $query;
     }
+
+    /**
+     * @return string
+     */
+    public function getConnection(): string
+    {
+        return $this->connection;
+    }
+
+    /**
+     * @param string $connection
+     */
+    public function setConnection(string $connection): void
+    {
+        $this->connection = $connection;
+    }
+
+    public function toArray(): array
+    {
+        $result = [];
+
+        foreach (get_object_vars($this) as $property => $value) {
+            if (!empty($value)) {
+                $result[$property] = $value;
+            }
+        }
+
+        return $result;
+    }
+
 }
