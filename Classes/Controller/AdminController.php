@@ -158,6 +158,11 @@ class AdminController extends ActionController
             }
         }
 
+        $querySaved = $GLOBALS['BE_USER']->getModuleData('system_solradmin/list/query');
+        if ($querySaved ?? false) {
+            $demand->setQuery($querySaved);
+        }
+
         return $demand;
     }
 
@@ -217,6 +222,9 @@ class AdminController extends ActionController
                 );
             }
         }
+
+        // store demand on user
+        $GLOBALS['BE_USER']->pushModuleData('system_solradmin/list/query', $demand->getQuery());
 
         return $demand;
     }
