@@ -1,6 +1,7 @@
 {
   "name": "apen/solradmin",
   "description": "TYPO3 extension to manage Apache Solr cores",
+  "type": "typo3-cms-extension",
   "keywords": [
     "TYPO3"
   ],
