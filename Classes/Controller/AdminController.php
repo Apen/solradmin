@@ -64,15 +64,15 @@ class AdminController extends ActionController
     /**
      * Output a list view of records
      *
-     * @param string $id
+     * @param string $solrid
      * @param array  $overwriteDemand
      * @param int    $currentPage
      */
-    public function detailAction(string $id, array $overwriteDemand = [], int $currentPage = 1): ResponseInterface
+    public function detailAction(string $solrid, array $overwriteDemand = [], int $currentPage = 1): ResponseInterface
     {
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $demand = $this->createDemandObjectFromSettingsAndArguments();
-        $demand->setQuery('id:' . $id);
+        $demand->setQuery('id:' . $solrid);
         $demand->setFieldList('*');
         $demand->setStart(0);
         $solrReponse = $this->adminRepository->findAll($demand);
@@ -89,15 +89,15 @@ class AdminController extends ActionController
     /**
      * Output a list view of records
      *
-     * @param string     $id
+     * @param string     $solrid
      * @param array|null $overwriteDemand
      * @param int        $currentPage
      */
-    public function deleteAction(string $id, ?array $overwriteDemand = null, int $currentPage = 1): ResponseInterface
+    public function deleteAction(string $solrid, ?array $overwriteDemand = null, int $currentPage = 1): ResponseInterface
     {
         $demand = $this->createDemandObjectFromSettingsAndArguments();
-        if (!empty($id)) {
-            $this->adminRepository->remove($demand, $id);
+        if (!empty($solrid)) {
+            $this->adminRepository->remove($demand, $solrid);
         }
 
         return $this->redirect(
