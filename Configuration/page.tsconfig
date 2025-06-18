@@ -1,0 +1,3 @@
+templates.apen/solradmin {
+    10 = apen/solradmin:Resources/Private/Backend
+}

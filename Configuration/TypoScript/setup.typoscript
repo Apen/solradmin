@@ -12,7 +12,7 @@ module.tx_solradmin {
 			}
 		}
 	}
-
+	# keep this for v12 compatibility
 	view {
 		templateRootPaths.10 = EXT:solradmin/Resources/Private/Backend/Templates/
 		partialRootPaths.10 = EXT:solradmin/Resources/Private/Backend/Partials/

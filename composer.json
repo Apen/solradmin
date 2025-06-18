@@ -15,8 +15,8 @@
   ],
   "license": "GPL-2.0+",
   "require": {
-    "php": ">=7.4",
-    "typo3/cms-core": "^11||^12"
+    "php": ">=8.1",
+    "typo3/cms-core": "^12||^13"
   },
   "scripts": {
     "php:ecs": ".Build/bin/ecs check . --config ./Build/ecs.php --fix --ansi",
